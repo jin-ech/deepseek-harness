@@ -10,6 +10,7 @@ import { ToolCallTree } from './tool/ToolCallTree.tsx'
 import { CONVERSATION_NS as NS } from './locale.ts'
 import { askQuestionToolview } from './tool/toolviews/ask-question-row.tsx'
 import { bashToolviewSample } from './tool/toolviews/bash-sample.tsx'
+import { chartToolview } from './tool/toolviews/chart-row.tsx'
 import { fileMutationToolview } from './tool/toolviews/file-mutation-row.tsx'
 import { readToolview } from './tool/toolviews/read-row.tsx'
 import { readImageToolview } from './tool/toolviews/read-image-row.tsx'
@@ -41,6 +42,7 @@ export function apply(ctx: ClientContext): void {
   }, ToolCallTree))
 
   ctx.plugin(bashToolviewSample)
+  ctx.plugin(chartToolview)
   ctx.plugin(readToolview)
   ctx.plugin(readImageToolview)
   ctx.plugin(fileMutationToolview)

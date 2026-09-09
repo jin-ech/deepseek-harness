@@ -18,11 +18,13 @@ import {
   diffBlockLabels, readBlockLabels, searchBlockLabels, webBlockLabels,
 } from '../models/primitive-labels.ts'
 import type { AskQuestionCardModel } from '../models/ask-question-card-model.ts'
+import type { ChartCardModel } from '../models/chart-card-model.ts'
 import {
   formatToolBody, type ToolRowState, type ToolRowVariant,
 } from '../models/tool-call-model.ts'
 import type { WebCardModelProps } from '../models/web-card-model.ts'
 import { AskQuestionCard } from './AskQuestionCard.tsx'
+import { ChartBlock } from './ChartBlock.tsx'
 import css from './ToolRow.module.css'
 
 export interface ToolRowProps {
@@ -70,6 +72,8 @@ export interface ToolRowProps {
   loadImage?: MessageImageLoader | undefined
   search?: SearchCardModel | null | undefined
   web?: WebCardModelProps | null | undefined
+  /** Chart card for a settled `generate_chart` call; renders an interactive ECharts canvas. */
+  chart?: ChartCardModel | null | undefined
   state: ToolRowState
   /**
    * Filesystem path from tool args; when set with onOpenFile, the summary
@@ -128,6 +132,7 @@ export function ToolRow({
   loadImage,
   search,
   web,
+  chart,
   state,
   filePath,
   filePathLine,
@@ -150,9 +155,10 @@ export function ToolRow({
     : null
   const searchBody = search ?? null
   const webBody = web ?? null
+  const chartBody = chart ?? null
   const askQuestionBody = askQuestion ?? null
   const outputText = output ?? null
-  const card = askQuestionBody ?? terminalBody ?? diffBody ?? readBody ?? imageBody ?? searchBody ?? webBody
+  const card = askQuestionBody ?? terminalBody ?? diffBody ?? readBody ?? imageBody ?? searchBody ?? webBody ?? chartBody
   const expandable = bodyRaw != null || outputText !== null || card !== null
   const open = expanded && expandable
   const bodyText = useMemo(
@@ -288,36 +294,38 @@ export function ToolRow({
                       )
                       : webBody !== null
                         ? <WebBlock {...webBody} labels={webLabels} className={css.webBody} />
-                        : (
-                          <>
-                            {variant === 'code' && bodyText !== null && (
-                              <div className={css.bodyScroll}>
-                                <CodeBlock code={bodyText} lang="typescript" copyLabel={t('copy')} copiedLabel={t('copied')} className={css.codeBody} />
-                              </div>
-                            )}
-                            {(cardBody !== null || outputText !== null) && (
-                              <div className={css.ioCard}>
-                                {cardBody !== null && (
-                                  <div className={css.ioSection}>
-                                    <span className={css.ioLabel}>{t('row.input')}</span>
-                                    <span className={css.ioText}>{cardBody}</span>
-                                  </div>
-                                )}
-                                {cardBody !== null && outputText !== null && (
-                                  <span className={css.ioDivider} aria-hidden />
-                                )}
-                                {outputText !== null && (
-                                  <div className={css.ioSection}>
-                                    <span className={css.ioLabel}>{t('row.output')}</span>
-                                    <span className={css.ioText} data-error={state === 'error' || undefined}>
-                                      {outputText}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                            )}
-                          </>
-                        )}
+                        : chartBody !== null
+                          ? <ChartBlock chart={chartBody} />
+                          : (
+                            <>
+                              {variant === 'code' && bodyText !== null && (
+                                <div className={css.bodyScroll}>
+                                  <CodeBlock code={bodyText} lang="typescript" copyLabel={t('copy')} copiedLabel={t('copied')} className={css.codeBody} />
+                                </div>
+                              )}
+                              {(cardBody !== null || outputText !== null) && (
+                                <div className={css.ioCard}>
+                                  {cardBody !== null && (
+                                    <div className={css.ioSection}>
+                                      <span className={css.ioLabel}>{t('row.input')}</span>
+                                      <span className={css.ioText}>{cardBody}</span>
+                                    </div>
+                                  )}
+                                  {cardBody !== null && outputText !== null && (
+                                    <span className={css.ioDivider} aria-hidden />
+                                  )}
+                                  {outputText !== null && (
+                                    <div className={css.ioSection}>
+                                      <span className={css.ioLabel}>{t('row.output')}</span>
+                                      <span className={css.ioText} data-error={state === 'error' || undefined}>
+                                        {outputText}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </>
+                          )}
           {inspect !== undefined && (
             <button
               type="button"

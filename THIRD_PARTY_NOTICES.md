@@ -71,6 +71,7 @@ External packages that a workspace package resolves at runtime. The tier covers 
 | [`compression`](https://github.com/expressjs/compression) | MIT |
 | [`diff`](https://github.com/kpdecker/jsdiff) | BSD-3-Clause |
 | [`e2b`](https://github.com/e2b-dev/e2b) | MIT |
+| [`echarts`](https://github.com/apache/echarts) | Apache-2.0 |
 | [`electron-updater`](https://github.com/electron-userland/electron-builder) | MIT |
 | [`eventsource-parser`](https://github.com/rexxars/eventsource-parser) | MIT |
 | [`fastify`](https://github.com/fastify/fastify) | MIT |

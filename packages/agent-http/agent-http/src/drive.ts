@@ -91,39 +91,140 @@ export function summarize(session: Session, firstSeq: SessionLogOffset): string 
   return text
 }
 
-/** Forward live text deltas of one owned agent to a sink until disposed. */
-export function forwardDeltas(ctx: Context, agent: Agent, emit: (text: string) => void): () => void {
+/** Forward live text and reasoning deltas of one owned agent to sinks until disposed. */
+export function forwardDeltas(
+  ctx: Context,
+  agent: Agent,
+  emitText: (text: string) => void,
+  emitReasoning?: (text: string) => void,
+): () => void {
   return ctx.on('agent/assistant-stream', ({ agent: subject, frame }) => {
     if (subject !== agent || frame.type !== 'chunk') return
     const chunk = frame.chunk
-    if (chunk.type === 'text-delta' && chunk.text !== '') emit(chunk.text)
+    if (chunk.type === 'text-delta' && chunk.text !== '') emitText(chunk.text)
+    else if (chunk.type === 'reasoning-delta' && chunk.text !== '' && emitReasoning !== undefined) {
+      emitReasoning(chunk.text)
+    }
   })
 }
+
+/** The presentation meta a `tool/result` event persists for UI bridges. */
+type ToolResultMeta = Exclude<Extract<SessionEvent, { type: 'tool/result' }>['data']['meta'], undefined>
 
 /** Curated execution node forwarded to streaming clients. */
 export interface SessionNode {
   type: string
+  /** Turn number (1-based). */
+  turn?: number
+  /** Step number within the turn (1-based). */
+  step?: number
+  /** Tool name for tool/call and tool/result nodes. */
   name?: string
+  /** Capped tool arguments JSON for tool/call nodes. */
   args?: string
+  /** Extracted file path from tool arguments (read/edit/write/glob/grep). */
+  filePath?: string
+  /** Short human-readable summary of the tool result. */
+  summary?: string
+  /** Error code for failed tool results. */
   error?: string
+  /** Tool-private presentation payload (e.g. a chart option), forwarded verbatim. */
+  meta?: ToolResultMeta
+  /** Token usage from assistant/message events. */
+  usage?: { input: number; output: number; total: number }
+  /** Reasoning/thinking text accumulated for this step. */
+  reasoning?: string
 }
 
 function capArgs(value: string): string {
   return value.length > 400 ? value.slice(0, 400) + '…' : value
 }
 
+/** Extract a file path from common tool argument JSON (read/edit/write/glob/grep). */
+function extractFilePath(_name: string, argsJson: string): string | undefined {
+  try {
+    const parsed = JSON.parse(argsJson) as Record<string, unknown>
+    // Common field names across fs tools
+    const path = parsed.file_path ?? parsed.path ?? parsed.pattern
+    if (typeof path === 'string' && path.length > 0) {
+      // Shorten absolute paths to relative-like display
+      const cwd = process.cwd()
+      return path.startsWith(cwd) ? path.slice(cwd.length + 1) : path
+    }
+  } catch { /* not parseable — skip */ }
+  return undefined
+}
+
+/** Produce a short summary from tool result content blocks. */
+function summarizeToolResult(
+  content: readonly { type: string; text?: string; content?: readonly { type: string; text?: string }[] }[],
+): string | undefined {
+  for (const block of content) {
+    // Tool result messages wrap their blocks one level deep under a `tool-result` envelope.
+    const parts = block.type === 'tool-result' ? block.content ?? [] : [block]
+    for (const part of parts) {
+      if (part.type === 'text' && typeof part.text === 'string') {
+        const text = part.text.trim()
+        if (text.length === 0) continue
+        // Take first meaningful line, capped
+        const firstLine = text.split('\n').find(l => l.trim().length > 0) ?? text
+        return firstLine.length > 120 ? firstLine.slice(0, 120) + '…' : firstLine
+      }
+    }
+  }
+  return undefined
+}
+
 /** Reduce one session event to a small, renderable execution node (or nothing). */
 function curateNode(event: SessionEvent): SessionNode | undefined {
   switch (event.type) {
     case 'turn/start':
+      return { type: event.type, turn: event.data.turn }
     case 'step/start':
+      return { type: event.type, turn: event.data.turn, step: event.data.step }
     case 'step/end':
+      return { type: event.type, turn: event.data.turn, step: event.data.step }
     case 'turn/end':
-      return { type: event.type }
-    case 'tool/call':
-      return { type: 'tool/call', name: event.data.name, args: capArgs(event.data.arguments) }
-    case 'tool/result':
-      return { type: 'tool/result', ...(event.data.error === undefined ? {} : { error: event.data.error.code }) }
+      return { type: event.type, turn: event.data.turn }
+    case 'tool/call': {
+      const filePath = extractFilePath(event.data.name, event.data.arguments)
+      return {
+        type: 'tool/call',
+        turn: event.data.turn,
+        step: event.data.step,
+        name: event.data.name,
+        args: capArgs(event.data.arguments),
+        ...(filePath !== undefined ? { filePath } : {}),
+      }
+    }
+    case 'tool/result': {
+      const summary = summarizeToolResult(event.data.message.content)
+      return {
+        type: 'tool/result',
+        turn: event.data.turn,
+        step: event.data.step,
+        ...(summary !== undefined ? { summary } : {}),
+        ...(event.data.error === undefined ? {} : { error: event.data.error.code }),
+        ...(event.data.meta === undefined ? {} : { meta: event.data.meta }),
+      }
+    }
+    case 'assistant/message': {
+      const usage = event.data.usage
+      return {
+        type: 'assistant/message',
+        turn: event.data.turn,
+        step: event.data.step,
+        ...(usage !== undefined
+          ? {
+            usage: {
+              input: usage.inputTokens,
+              output: usage.outputTokens,
+              total: usage.totalTokens ?? (usage.inputTokens + usage.outputTokens),
+            },
+          }
+          : {}),
+      }
+    }
     default:
       return undefined
   }
@@ -264,6 +365,7 @@ export class AgentSessions {
     onDelta?: (text: string) => void,
     onNode?: (node: SessionNode) => void,
     onStatus?: (status: 'idle' | 'running') => void,
+    onReasoning?: (text: string) => void,
   ): Promise<{ sessionId: string; text: string }> {
     await ctx.get('loader')?.await()
     let entry = requestedId === undefined ? undefined : this.entries.get(requestedId)
@@ -277,7 +379,9 @@ export class AgentSessions {
     try {
       await entry.handle.agent.whenIdle()
       const firstSeq = entry.handle.agent.session.seq
-      const stopDeltas = onDelta ? forwardDeltas(ctx, entry.handle.agent, onDelta) : undefined
+      const stopDeltas = onDelta !== undefined || onReasoning !== undefined
+        ? forwardDeltas(ctx, entry.handle.agent, onDelta ?? (() => {}), onReasoning)
+        : undefined
       const stopNodes = onNode !== undefined || onStatus !== undefined
         ? forwardNodes(ctx, entry.handle.agent, onNode ?? (() => {}), onStatus)
         : undefined

@@ -55,6 +55,11 @@ export async function buildAgentHttpApp(ctx: Context, opts: AgentHttpOptions): P
   await app.register(fastifyStatic, {
     root: fileURLToPath(new URL('../static', import.meta.url)),
     index: ['index.html'],
+    // The call page is a live debugging surface; never let a browser cache it.
+    cacheControl: false,
+    setHeaders: (res, path) => {
+      if (path.endsWith('index.html')) res.setHeader('cache-control', 'no-store')
+    },
   })
   await app.register(healthRoutes, { ctx, opts, sessions })
   await app.register(runRoutes, { ctx, opts, sessions })

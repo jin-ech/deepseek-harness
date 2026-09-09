@@ -41,6 +41,7 @@ export async function streamRoutes(app: FastifyInstance, options: AgentHttpPlugi
         (text) => { if (!aborted) send('delta', { text }) },
         (node) => { if (!aborted) send('node', node) },
         (status) => { if (!aborted) send('status', { status }) },
+        (text) => { if (!aborted) send('reasoning', { text }) },
       )
       send('done', { sessionId: result.sessionId, text: result.text })
     } catch (error) {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,7 +19,11 @@
       --err: #dc2626;
       --radius: 12px;
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
@@ -28,6 +33,7 @@
       display: flex;
       flex-direction: column;
     }
+
     header {
       display: flex;
       align-items: center;
@@ -37,9 +43,26 @@
       background: var(--panel);
       flex-wrap: wrap;
     }
-    header h1 { font-size: 15px; margin: 0; font-weight: 600; }
-    header .chain { font-size: 12px; color: var(--muted); }
-    .basebox { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+
+    header h1 {
+      font-size: 15px;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    header .chain {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .basebox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
     .basebox input {
       background: #fff;
       border: 1px solid var(--border);
@@ -51,6 +74,7 @@
       width: 230px;
       outline: none;
     }
+
     .status {
       margin-left: auto;
       font-size: 12px;
@@ -60,12 +84,29 @@
       color: var(--muted);
       white-space: nowrap;
     }
-    .status.ok { color: var(--ok); border-color: var(--ok); background: #f0fdf4; }
-    .status.err { color: var(--err); border-color: var(--err); background: #fef2f2; }
-    .status .dot {
-      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
-      background: currentColor; margin-right: 6px; vertical-align: middle;
+
+    .status.ok {
+      color: var(--ok);
+      border-color: var(--ok);
+      background: #f0fdf4;
     }
+
+    .status.err {
+      color: var(--err);
+      border-color: var(--err);
+      background: #fef2f2;
+    }
+
+    .status .dot {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
     main {
       flex: 1;
       overflow-y: auto;
@@ -73,23 +114,58 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      width: 720px;
+      margin: 0 auto;
     }
+
     .bubble {
       max-width: 82%;
       padding: 12px 14px;
       border-radius: var(--radius);
-      line-height: 1.6;
+      /* line-height: 1.6; */
       font-size: 14px;
-      white-space: pre-wrap;
+      /* white-space: pre-wrap; */
       word-break: break-word;
     }
-    .bubble.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
-    .bubble.assistant { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
-    .bubble.error { align-self: flex-start; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
-    .bubble .meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-    .bubble.user .meta { color: rgba(255,255,255,.8); }
-    @keyframes blink { 50% { opacity: 0; } }
-    .md { line-height: 1.7; }
+
+    .bubble.user {
+      align-self: flex-end;
+      background: var(--accent);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .bubble.assistant {
+      align-self: flex-start;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      border-bottom-left-radius: 4px;
+    }
+
+    .bubble.error {
+      align-self: flex-start;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+    }
+
+    .bubble .meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .bubble.user .meta {
+      color: rgba(255, 255, 255, .8);
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: 0;
+      }
+    }
+
+    /* .md { line-height: 1.7; }
     .md pre { background: #f0f2f5; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: #24292f; }
     .md code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: #f0f2f5; border-radius: 4px; padding: 1px 5px; color: #24292f; }
     .md pre code { background: transparent; padding: 0; }
@@ -99,10 +175,163 @@
     .md ul,.md ol { margin: .3em 0; padding-left: 1.4em; }
     .md blockquote { margin: .4em 0; padding-left: 12px; border-left: 3px solid var(--border); color: var(--muted); }
     .md table { border-collapse: collapse; margin: .5em 0; }
-    .md th,.md td { border: 1px solid var(--border); padding: 5px 10px; }
-    .stream-cursor { display: inline-block; width: .55em; height: 1.05em; vertical-align: -.15em; margin-left: 2px; background: var(--accent-2); animation: blink 1s steps(1) infinite; }
-    .activity { align-self: flex-start; color: var(--muted); font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 14px 2px 16px; }
-    .activity::before { content: "└ "; }
+    .md th,.md td { border: 1px solid var(--border); padding: 5px 10px; } */
+    .stream-cursor {
+      display: inline-block;
+      width: .55em;
+      height: 1.05em;
+      vertical-align: -.15em;
+      margin-left: 2px;
+      background: var(--accent-2);
+      animation: blink 1s steps(1) infinite;
+    }
+
+    .activity {
+      align-self: flex-start;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 3px 14px 3px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.5;
+    }
+
+    .activity .icon {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+
+    .activity .label {
+      font-weight: 500;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .activity .detail {
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 520px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 11px;
+    }
+
+    .activity .badge {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--panel-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .activity .badge.ok {
+      color: var(--ok);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .activity .badge.err {
+      color: var(--err);
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .reasoning-block {
+      align-self: flex-start;
+      max-width: 82%;
+      margin: 4px 0 4px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fafbfc;
+      overflow: hidden;
+    }
+
+    .reasoning-block summary {
+      cursor: pointer;
+      padding: 6px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      user-select: none;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .reasoning-block summary::before {
+      content: "💭";
+    }
+
+    .reasoning-block summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .reasoning-block .reasoning-body {
+      padding: 8px 12px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #4a5568;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 200px;
+      overflow-y: auto;
+      border-top: 1px solid var(--border);
+    }
+
+    .chart-container {
+      align-self: flex-start;
+      width: 100%;
+      height: 480px;
+      margin: 8px 0;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      /* overflow: hidden; */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+    }
+
+    .chart-container .chart-header {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--panel-2);
+    }
+
+    .chart-container .chart-header .chart-icon {
+      font-size: 14px;
+    }
+
+    .chart-container .chart-header .chart-title {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .chart-container .chart-header .chart-type {
+      font-size: 10px;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #eef2ff;
+      color: #4f46e5;
+      border: 1px solid #c7d2fe;
+    }
+
+    .chart-container .chart-body {
+      padding: 8px;
+    }
+
     footer {
       padding: 14px 20px;
       border-top: 1px solid var(--border);
@@ -110,10 +339,26 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
+      width: 720px;
+      margin: 0 auto;
     }
-    .hint { font-size: 11px; color: var(--muted); }
-    .opts { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
-    .opts input[type="text"], .opts input[type="password"] {
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .opts {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .opts input[type="text"],
+    .opts input[type="password"] {
       background: #fff;
       border: 1px solid var(--border);
       color: var(--text);
@@ -121,10 +366,15 @@
       padding: 5px 8px;
       font-size: 12px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      width: 260px;
+      width: 180px;
       outline: none;
     }
-    .row { display: flex; gap: 10px; }
+
+    .row {
+      display: flex;
+      gap: 10px;
+    }
+
     textarea {
       flex: 1;
       resize: none;
@@ -139,7 +389,11 @@
       font-family: inherit;
       outline: none;
     }
-    textarea:focus { border-color: var(--accent-2); }
+
+    textarea:focus {
+      border-color: var(--accent-2);
+    }
+
     button {
       padding: 0 20px;
       border: none;
@@ -150,13 +404,18 @@
       font-weight: 600;
       cursor: pointer;
     }
-    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
   </style>
 </head>
+
 <body>
   <header>
     <h1>agent-http 调用页</h1>
-    <span class="chain">HTML(跨域) → agent-http → DeepSeek Harness</span>
+    <span class="chain">HTML(跨域) → agent-http → DeepSeek Harness · page v4-vendor</span>
     <label class="basebox">服务地址
       <input id="base" type="text" value="http://127.0.0.1:8787" spellcheck="false" />
     </label>
@@ -184,7 +443,9 @@
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <!-- 本地内置,避免 CDN 在网络受限时加载失败导致图表/Markdown 降级 -->
+  <script src="vendor/marked.umd.js"></script>
+  <script src="vendor/echarts.min.js"></script>
   <script>
     const chat = document.getElementById('chat')
     const promptEl = document.getElementById('prompt')
@@ -233,17 +494,141 @@
       chat.scrollTop = chat.scrollHeight
     }
 
-    function nodeActivity(node) {
+    // Tool name → icon + Chinese label mapping (mirrors Web GUI style)
+    const TOOL_META = {
+      read: { icon: '📄', label: '读取' },
+      edit: { icon: '✏️', label: '编辑' },
+      write: { icon: '📝', label: '写入' },
+      glob: { icon: '🔍', label: '搜索文件' },
+      grep: { icon: '🔎', label: '搜索内容' },
+      bash: { icon: '💻', label: '执行命令' },
+      subagent: { icon: '🤖', label: '子代理' },
+      web_search: { icon: '🌐', label: '网络搜索' },
+      web_fetch: { icon: '📡', label: '获取网页' },
+      skill: { icon: '⚡', label: '技能' },
+      todo_write: { icon: '📋', label: '任务列表' },
+      ask_user_question: { icon: '❓', label: '提问' },
+    }
+
+    function renderNode(node) {
       if (!node || !node.type) return
+      const div = document.createElement('div')
+      div.className = 'activity'
+
       switch (node.type) {
-        case 'turn/start': return appendActivity('▶ 轮次开始')
-        case 'step/start': return appendActivity('· 步骤开始（模型请求）')
-        case 'step/end': return appendActivity('· 步骤结束')
-        case 'turn/end': return appendActivity('■ 轮次结束')
-        case 'tool/call': return appendActivity('🔧 调用工具 ' + (node.name || 'tool'))
-        case 'tool/result': return appendActivity('✓ 工具返回' + (node.error ? '（' + node.error + '）' : ''))
-        default: return appendActivity('· ' + node.type)
+        case 'turn/start':
+          div.innerHTML = '<span class="icon">▶</span><span class="label">轮次开始</span>'
+            + (node.turn ? '<span class="badge">#' + node.turn + '</span>' : '')
+          break
+        case 'step/start':
+          div.innerHTML = '<span class="icon">·</span><span class="label">模型请求</span>'
+            + (node.step ? '<span class="badge">步骤 ' + node.step + '</span>' : '')
+          break
+        case 'step/end':
+          div.innerHTML = '<span class="icon">·</span><span class="label">步骤结束</span>'
+            + (node.step ? '<span class="badge">步骤 ' + node.step + '</span>' : '')
+          break
+        case 'turn/end':
+          div.innerHTML = '<span class="icon">■</span><span class="label">轮次结束</span>'
+            + (node.turn ? '<span class="badge">#' + node.turn + '</span>' : '')
+          break
+        case 'tool/call': {
+          const meta = TOOL_META[node.name] || { icon: '🔧', label: node.name || '工具' }
+          let html = '<span class="icon">' + meta.icon + '</span>'
+            + '<span class="label">' + escapeHtml(meta.label) + '</span>'
+          if (node.filePath) {
+            html += '<span class="detail">· ' + escapeHtml(node.filePath) + '</span>'
+          } else if (node.args) {
+            // Show a short snippet of args
+            const snippet = node.args.length > 80 ? node.args.slice(0, 80) + '…' : node.args
+            html += '<span class="detail">· ' + escapeHtml(snippet) + '</span>'
+          }
+          div.innerHTML = html
+          break
+        }
+        case 'tool/result': {
+          let html = '<span class="icon">✓</span><span class="label">工具返回</span>'
+          if (node.error) {
+            html += '<span class="badge err">' + escapeHtml(node.error) + '</span>'
+          } else {
+            html += '<span class="badge ok">成功</span>'
+          }
+          if (node.summary) {
+            html += '<span class="detail">· ' + escapeHtml(node.summary) + '</span>'
+          }
+          div.innerHTML = html
+          // 结构化图表载荷(generate_chart 的 presentation meta)在活动行下方单独成块渲染。
+          if (!node.error && node.meta && node.meta.echarts_option) {
+            console.log('node.meta: ', node.meta);
+            chat.appendChild(div)
+            const placeholder = document.createElement('div')
+            placeholder.style.width = '100%';
+            placeholder.style.height = '480px';
+            chat.appendChild(placeholder)
+            renderEChart(placeholder, node.meta)
+            chat.scrollTop = chat.scrollHeight
+            return
+          }
+          break
+        }
+        case 'assistant/message': {
+          let html = '<span class="icon">📨</span><span class="label">模型响应</span>'
+          if (node.usage) {
+            html += '<span class="badge">' + node.usage.input + ' + ' + node.usage.output + ' tokens</span>'
+          }
+          div.innerHTML = html
+          break
+        }
+        default:
+          div.innerHTML = '<span class="icon">·</span><span class="label">' + escapeHtml(node.type) + '</span>'
       }
+      chat.appendChild(div)
+      chat.scrollTop = chat.scrollHeight
+    }
+
+    // Reasoning/thinking block management
+    let reasoningEl = null
+    let reasoningRaw = ''
+
+    function openReasoning() {
+      if (reasoningEl) return
+      const details = document.createElement('details')
+      details.className = 'reasoning-block'
+      details.open = true
+      const summary = document.createElement('summary')
+      summary.textContent = '思考中…'
+      const body = document.createElement('div')
+      body.className = 'reasoning-body'
+      details.appendChild(summary)
+      details.appendChild(body)
+      chat.appendChild(details)
+      reasoningEl = details
+      reasoningRaw = ''
+      chat.scrollTop = chat.scrollHeight
+    }
+
+    function appendReasoning(text) {
+      if (!reasoningEl) openReasoning()
+      reasoningRaw += text
+      const body = reasoningEl.querySelector('.reasoning-body')
+      if (body) {
+        body.textContent = reasoningRaw
+        chat.scrollTop = chat.scrollHeight
+      }
+    }
+
+    function closeReasoning() {
+      if (!reasoningEl) return
+      const summary = reasoningEl.querySelector('summary')
+      if (summary) {
+        const len = reasoningRaw.length
+        summary.textContent = len > 0
+          ? '思考完成（' + len + ' 字）'
+          : '思考'
+      }
+      reasoningEl.open = false
+      reasoningEl = null
+      reasoningRaw = ''
     }
 
     async function health() {
@@ -258,7 +643,7 @@
       }
     }
 
-    // 处理 agent-http 的 SSE：delta(逐字) / node(执行节点) / status / done / error
+    // 处理 agent-http 的 SSE：delta(逐字) / reasoning(思考) / node(执行节点) / status / done / error
     function handleFrame(frame, cb) {
       let name = 'message'
       let data = ''
@@ -270,6 +655,7 @@
       let payload
       try { payload = JSON.parse(data) } catch { return }
       if (name === 'delta') cb.onDelta(typeof payload.text === 'string' ? payload.text : '')
+      else if (name === 'reasoning') cb.onReasoning(typeof payload.text === 'string' ? payload.text : '')
       else if (name === 'node') cb.onNode(payload)
       else if (name === 'status') cb.onStatus(payload.status)
       else if (name === 'done') cb.onDone(payload)
@@ -295,6 +681,58 @@
       return '<pre>' + esc + '</pre>'
     }
 
+    /** Render one ECharts instance into a placeholder element. */
+    function renderEChart(placeholder, chartData) {
+      const d = chartData
+      const width = d.width || '100%'
+      const height = d.height || '400px'
+
+      // Build the chart container
+      const wrapper = document.createElement('div')
+      wrapper.className = 'chart-container'
+
+      const header = document.createElement('div')
+      header.className = 'chart-header'
+      header.innerHTML = '<span class="chart-icon">📊</span>'
+        + '<span class="chart-title">' + escapeHtml(d.title || '图表') + '</span>'
+        + '<span class="chart-type">' + escapeHtml(d.chart_type || 'chart') + '</span>'
+      wrapper.appendChild(header)
+
+      const body = document.createElement('div')
+      body.className = 'chart-body'
+      const chartDiv = document.createElement('div')
+      chartDiv.style.width = width
+      chartDiv.style.height = height
+      body.appendChild(chartDiv)
+      wrapper.appendChild(body)
+
+      placeholder.replaceWith(wrapper)
+
+      // Initialize ECharts
+      if (window.echarts) {
+        try {
+          const option = d.echarts_option || {}
+          // Merge title into option if not already present
+          if (d.title && !option.title) {
+            option.title = { text: d.title, left: 'center', textStyle: { fontSize: 14 } }
+          }
+          // Ensure tooltip is enabled
+          if (!option.tooltip) {
+            option.tooltip = { trigger: d.chart_type === 'pie' ? 'item' : 'axis' }
+          }
+          const chart = window.echarts.init(chartDiv)
+          chart.setOption(option)
+          // Responsive resize
+          const ro = new ResizeObserver(() => chart.resize())
+          ro.observe(chartDiv)
+        } catch (e) {
+          chartDiv.innerHTML = '<div style="color:var(--err);padding:20px;text-align:center">图表渲染失败: ' + escapeHtml(e.message) + '</div>'
+        }
+      } else {
+        chartDiv.innerHTML = '<div style="color:var(--muted);padding:20px;text-align:center">ECharts 未加载</div>'
+      }
+    }
+
     async function run() {
       const prompt = promptEl.value.trim()
       if (!prompt) return
@@ -303,7 +741,6 @@
       append('user', prompt, '你 · ' + new Date().toLocaleTimeString())
       promptEl.value = ''
       sendBtn.disabled = true
-      appendActivity('⏳ 正在请求 ' + target)
 
       let live = null   // 当前正在流式的 assistant 气泡（无文本时为 null）
       let raw = ''      // 当前气泡累积的原文
@@ -324,7 +761,9 @@
       function renderLive() {
         if (!live) return
         const md = live.querySelector('.md')
-        if (md) md.innerHTML = renderMarkdown(raw) + '<span class="stream-cursor"></span>'
+        if (md) {
+          md.innerHTML = renderMarkdown(raw) + '<span class="stream-cursor"></span>'
+        }
         chat.scrollTop = chat.scrollHeight
       }
 
@@ -371,7 +810,7 @@
         const reader = res.body.getReader()
         const decoder = new TextDecoder()
         let buffer = ''
-        for (;;) {
+        for (; ;) {
           const { done, value } = await reader.read()
           if (done) break
           buffer += decoder.decode(value, { stream: true })
@@ -381,17 +820,25 @@
             buffer = buffer.slice(idx + 2)
             if (frame.trim()) {
               handleFrame(frame, {
-                onDelta: (text) => { if (!live) openAssistant(); raw += text; renderLive() },
-                onNode: (node) => { closeAssistant(); nodeActivity(node) },
+                onDelta: (text) => { closeReasoning(); if (!live) openAssistant(); raw += text; renderLive() },
+                onReasoning: (text) => { appendReasoning(text) },
+                onNode: (node) => {
+                  // Close reasoning when a non-reasoning node arrives
+                  if (node.type !== 'assistant/message') closeReasoning()
+                  // Close assistant bubble before showing process nodes
+                  if (node.type === 'step/start' || node.type === 'tool/call') closeAssistant()
+                  renderNode(node)
+                },
                 onStatus: (status) => { if (status === 'running') appendActivity('▶ agent 工作中') },
                 onDone: (payload) => {
+                  closeReasoning()
                   closeAssistant('✓ 完成 · sessionId: ' + (payload.sessionId || '?'))
                   if (payload.sessionId) {
                     sessionEl.value = payload.sessionId
                     localStorage.setItem('agent-http.sessionId', payload.sessionId)
                   }
                 },
-                onError: (message) => { closeAssistant('✗ 失败'); append('error', '错误：' + message, '服务端报错') },
+                onError: (message) => { closeReasoning(); closeAssistant('✗ 失败'); append('error', '错误：' + message, '服务端报错') },
               })
             }
           }
@@ -422,4 +869,5 @@
     health()
   </script>
 </body>
+
 </html>

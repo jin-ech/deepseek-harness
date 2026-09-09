@@ -4,4 +4,4 @@
 - insert:
     - id: agent-http-server
       name: '@deepseek-ai/dsh-agent-http'
-      accessToken: ''   # 留空表示不鉴权；对外暴露前务必改成强随机令牌
+      accessToken: 'd76d4b45c61b5719726d4f098c709c73332b201a1bc7a7526424bf3e82f5f4e9'   # 留空表示不鉴权；对外暴露前务必改成强随机令牌

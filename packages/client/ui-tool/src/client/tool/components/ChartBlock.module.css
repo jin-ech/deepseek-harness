@@ -1,0 +1,15 @@
+/* ECharts container inside a Tool row expansion body. */
+
+.root {
+  padding: var(--dsh-spacing-3) 0;
+}
+
+.canvas {
+  min-height: 200px;
+}
+
+.error {
+  color: var(--dsw-color-error);
+  padding: var(--dsh-spacing-4);
+  text-align: center;
+}
