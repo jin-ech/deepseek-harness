@@ -37,6 +37,7 @@ Every package lives in exactly one group; new packages join existing groups, and
 | [`identity/`](identity/README.md) | Shared anonymous identity |
 | [`llm/`](llm/README.md) | LLM capability family: abstract service + provider adapters |
 | [`e2b/`](e2b/README.md) | E2B remote-runtime providers |
+| [`employ/`](employ/README.md) | Guohua employment management integration: model-facing base/person/contract/clue query tools |
 | [`subprocess/`](subprocess/README.md) | Subprocess capability family: Service Definition + local process-tree provider |
 | [`shell/`](shell/README.md) | Bash capability family: executor seam, local impl, model-facing tools |
 | [`terminal/`](terminal/README.md) | Persistent PTY capability family: owner-scoped sessions, local implementation, model-facing tools |
@@ -70,6 +71,7 @@ Every package lives in exactly one group; new packages join existing groups, and
 | [`workspace/`](workspace/README.md) | Workspace entity |
 | [`sdk/`](sdk/README.md) | Out-of-process SDK: JSON-RPC protocol and TypeScript client/server |
 | [`acp/`](acp/README.md) | Automation-only Agent Client Protocol server |
+| [`agent-http/`](agent-http/README.md) | HTTP agent server: bundle + plugin exposing the in-process agent over `/run` and streaming `/run/stream` |
 | [`interaction/`](interaction/README.md) | Human-collaboration plane: approval/interaction seams, permission preset, commands, ask-user tool |
 | [`boot/`](boot/README.md) | Shared app-bin boot glue |
 | [`host/`](host/README.md) | Web-GUI host half: API gateway + HTTP route server |

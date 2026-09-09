@@ -265,6 +265,9 @@
       config:
         sampleOverCapGlobResults: false
 
+    - id: employ-tools
+      name: '@deepseek-ai/dsh-employ-tools'
+
     - id: agent-instructions
       name: '@deepseek-ai/dsh-agent-instructions'
       config:

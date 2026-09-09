@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeepSeek Harness · agent-http 跨域调用页</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --panel: #ffffff;
+      --panel-2: #f6f8fa;
+      --border: #e1e4e8;
+      --text: #1f2328;
+      --muted: #6a737d;
+      --accent: #2563eb;
+      --accent-2: #2563eb;
+      --ok: #16a34a;
+      --err: #dc2626;
+      --radius: 12px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      background: var(--panel);
+      flex-wrap: wrap;
+    }
+    header h1 { font-size: 15px; margin: 0; font-weight: 600; }
+    header .chain { font-size: 12px; color: var(--muted); }
+    .basebox { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+    .basebox input {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      width: 230px;
+      outline: none;
+    }
+    .status {
+      margin-left: auto;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .status.ok { color: var(--ok); border-color: var(--ok); background: #f0fdf4; }
+    .status.err { color: var(--err); border-color: var(--err); background: #fef2f2; }
+    .status .dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: currentColor; margin-right: 6px; vertical-align: middle;
+    }
+    main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .bubble {
+      max-width: 82%;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      line-height: 1.6;
+      font-size: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .bubble.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .bubble.assistant { align-self: flex-start; background: var(--panel-2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .bubble.error { align-self: flex-start; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+    .bubble .meta { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .bubble.user .meta { color: rgba(255,255,255,.8); }
+    @keyframes blink { 50% { opacity: 0; } }
+    .md { line-height: 1.7; }
+    .md pre { background: #f0f2f5; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; overflow-x: auto; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; color: #24292f; }
+    .md code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; background: #f0f2f5; border-radius: 4px; padding: 1px 5px; color: #24292f; }
+    .md pre code { background: transparent; padding: 0; }
+    .md a { color: var(--accent); }
+    .md h1,.md h2,.md h3,.md h4 { margin: .6em 0 .35em; line-height: 1.3; }
+    .md p { margin: .4em 0; }
+    .md ul,.md ol { margin: .3em 0; padding-left: 1.4em; }
+    .md blockquote { margin: .4em 0; padding-left: 12px; border-left: 3px solid var(--border); color: var(--muted); }
+    .md table { border-collapse: collapse; margin: .5em 0; }
+    .md th,.md td { border: 1px solid var(--border); padding: 5px 10px; }
+    .stream-cursor { display: inline-block; width: .55em; height: 1.05em; vertical-align: -.15em; margin-left: 2px; background: var(--accent-2); animation: blink 1s steps(1) infinite; }
+    .activity { align-self: flex-start; color: var(--muted); font-size: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; padding: 2px 14px 2px 16px; }
+    .activity::before { content: "└ "; }
+    footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+      background: var(--panel);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .hint { font-size: 11px; color: var(--muted); }
+    .opts { display: flex; gap: 14px; align-items: center; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+    .opts input[type="text"], .opts input[type="password"] {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 8px;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      width: 260px;
+      outline: none;
+    }
+    .row { display: flex; gap: 10px; }
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 46px;
+      max-height: 200px;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+    }
+    textarea:focus { border-color: var(--accent-2); }
+    button {
+      padding: 0 20px;
+      border: none;
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>agent-http 调用页</h1>
+    <span class="chain">HTML(跨域) → agent-http → DeepSeek Harness</span>
+    <label class="basebox">服务地址
+      <input id="base" type="text" value="http://127.0.0.1:8787" spellcheck="false" />
+    </label>
+    <span class="status" id="status"><span class="dot"></span>检测中…</span>
+  </header>
+
+  <main id="chat"></main>
+
+  <footer>
+    <div class="opts">
+      <label>会话 ID（留空则新建）
+        <input id="session" type="text" placeholder="留空新建；填上次的 ID 可续聊" spellcheck="false" />
+      </label>
+      <label>访问令牌
+        <input id="token" type="password" placeholder="Bearer 令牌（服务端配置了 accessToken 时必填）" spellcheck="false" />
+      </label>
+    </div>
+    <div class="row">
+      <textarea id="prompt" placeholder="输入你的问题，例如：你好 / 查询基地列表" rows="2"></textarea>
+      <button id="send">发送</button>
+    </div>
+    <div class="hint">
+      说明：页面与 agent-http 服务跨源，依赖服务端 CORS（agent-http 已返回
+      <code>access-control-allow-origin: *</code>）。填会话 ID 可复用同一 agent 进程内会话续聊。
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script>
+    const chat = document.getElementById('chat')
+    const promptEl = document.getElementById('prompt')
+    const sessionEl = document.getElementById('session')
+    const tokenEl = document.getElementById('token')
+    const baseEl = document.getElementById('base')
+    const sendBtn = document.getElementById('send')
+    const statusEl = document.getElementById('status')
+
+    const savedBase = localStorage.getItem('agent-http.base')
+    if (savedBase) baseEl.value = savedBase
+    const savedToken = localStorage.getItem('agent-http.token')
+    if (savedToken) tokenEl.value = savedToken
+    const savedSession = localStorage.getItem('agent-http.sessionId')
+    if (savedSession) sessionEl.value = savedSession
+
+    function base() {
+      return baseEl.value.trim().replace(/\/+$/, '')
+    }
+
+    function setStatus(ok, text) {
+      statusEl.className = 'status ' + (ok ? 'ok' : 'err')
+      statusEl.innerHTML = '<span class="dot"></span>' + text
+    }
+
+    function append(kind, text, meta) {
+      const div = document.createElement('div')
+      div.className = 'bubble ' + kind
+      if (meta) {
+        const metaNode = document.createElement('div')
+        metaNode.className = 'meta'
+        metaNode.textContent = meta
+        div.appendChild(metaNode)
+      }
+      div.appendChild(document.createTextNode(text))
+      chat.appendChild(div)
+      chat.scrollTop = chat.scrollHeight
+      return div
+    }
+
+    function appendActivity(text) {
+      const div = document.createElement('div')
+      div.className = 'activity'
+      div.textContent = text
+      chat.appendChild(div)
+      chat.scrollTop = chat.scrollHeight
+    }
+
+    function nodeActivity(node) {
+      if (!node || !node.type) return
+      switch (node.type) {
+        case 'turn/start': return appendActivity('▶ 轮次开始')
+        case 'step/start': return appendActivity('· 步骤开始（模型请求）')
+        case 'step/end': return appendActivity('· 步骤结束')
+        case 'turn/end': return appendActivity('■ 轮次结束')
+        case 'tool/call': return appendActivity('🔧 调用工具 ' + (node.name || 'tool'))
+        case 'tool/result': return appendActivity('✓ 工具返回' + (node.error ? '（' + node.error + '）' : ''))
+        default: return appendActivity('· ' + node.type)
+      }
+    }
+
+    async function health() {
+      const target = base() + '/health'
+      try {
+        const res = await fetch(target, { method: 'GET' })
+        const data = await res.json().catch(() => ({}))
+        if (data.ok) setStatus(true, '在线 · ready=' + data.ready)
+        else setStatus(false, '服务异常' + (data.error ? '：' + data.error : ''))
+      } catch (e) {
+        setStatus(false, '不可达：' + e.message)
+      }
+    }
+
+    // 处理 agent-http 的 SSE：delta(逐字) / node(执行节点) / status / done / error
+    function handleFrame(frame, cb) {
+      let name = 'message'
+      let data = ''
+      for (const line of frame.split('\n')) {
+        if (line.startsWith('event:')) name = line.slice(6).trim()
+        else if (line.startsWith('data:')) data += line.slice(5).trim()
+      }
+      if (!data) return
+      let payload
+      try { payload = JSON.parse(data) } catch { return }
+      if (name === 'delta') cb.onDelta(typeof payload.text === 'string' ? payload.text : '')
+      else if (name === 'node') cb.onNode(payload)
+      else if (name === 'status') cb.onStatus(payload.status)
+      else if (name === 'done') cb.onDone(payload)
+      else if (name === 'error') cb.onError(payload.message || 'unknown error')
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+    }
+
+    // 先转义再走 marked：模型输出里的原始 HTML 只会按字面显示，不会注入 DOM。
+    // 离线/无 marked 时退化为转义后的 <pre> 纯文本。
+    function renderMarkdown(src) {
+      const esc = escapeHtml(src)
+      if (window.marked && typeof window.marked.parse === 'function') {
+        try {
+          return window.marked.parse(esc, { gfm: true, breaks: true })
+        } catch { /* fall through */ }
+      }
+      return '<pre>' + esc + '</pre>'
+    }
+
+    async function run() {
+      const prompt = promptEl.value.trim()
+      if (!prompt) return
+      const target = base() + '/run/stream'
+
+      append('user', prompt, '你 · ' + new Date().toLocaleTimeString())
+      promptEl.value = ''
+      sendBtn.disabled = true
+      appendActivity('⏳ 正在请求 ' + target)
+
+      let live = null   // 当前正在流式的 assistant 气泡（无文本时为 null）
+      let raw = ''      // 当前气泡累积的原文
+
+      function openAssistant() {
+        const bubble = document.createElement('div')
+        bubble.className = 'bubble assistant'
+        const md = document.createElement('div')
+        md.className = 'md'
+        md.innerHTML = '<span class="stream-cursor"></span>'
+        bubble.appendChild(md)
+        chat.appendChild(bubble)
+        raw = ''
+        live = bubble
+        return bubble
+      }
+
+      function renderLive() {
+        if (!live) return
+        const md = live.querySelector('.md')
+        if (md) md.innerHTML = renderMarkdown(raw) + '<span class="stream-cursor"></span>'
+        chat.scrollTop = chat.scrollHeight
+      }
+
+      // 收尾当前 assistant 气泡（可选加 meta 行）；返回 null 供下一条 delta 新建。
+      function closeAssistant(metaText) {
+        if (!live) return
+        const md = live.querySelector('.md')
+        if (md) {
+          md.innerHTML = raw.trim()
+            ? renderMarkdown(raw)
+            : '<span style="color:var(--muted)">(无文本输出)</span>'
+        }
+        if (metaText) {
+          const meta = document.createElement('div')
+          meta.className = 'meta'
+          meta.textContent = metaText
+          live.insertBefore(meta, md)
+        }
+        live = null
+        raw = ''
+        chat.scrollTop = chat.scrollHeight
+      }
+
+      try {
+        const sessionId = sessionEl.value.trim() || undefined
+        const token = tokenEl.value.trim()
+        const res = await fetch(target, {
+          method: 'POST',
+          headers: token
+            ? { 'content-type': 'application/json', authorization: 'Bearer ' + token }
+            : { 'content-type': 'application/json' },
+          body: JSON.stringify(sessionId ? { prompt, sessionId } : { prompt }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          append('error', '错误：' + (data.error || res.status), 'HTTP ' + res.status)
+          return
+        }
+        if (!res.body) {
+          append('error', '响应无流式体', 'HTTP ' + res.status)
+          return
+        }
+
+        const reader = res.body.getReader()
+        const decoder = new TextDecoder()
+        let buffer = ''
+        for (;;) {
+          const { done, value } = await reader.read()
+          if (done) break
+          buffer += decoder.decode(value, { stream: true })
+          let idx
+          while ((idx = buffer.indexOf('\n\n')) >= 0) {
+            const frame = buffer.slice(0, idx)
+            buffer = buffer.slice(idx + 2)
+            if (frame.trim()) {
+              handleFrame(frame, {
+                onDelta: (text) => { if (!live) openAssistant(); raw += text; renderLive() },
+                onNode: (node) => { closeAssistant(); nodeActivity(node) },
+                onStatus: (status) => { if (status === 'running') appendActivity('▶ agent 工作中') },
+                onDone: (payload) => {
+                  closeAssistant('✓ 完成 · sessionId: ' + (payload.sessionId || '?'))
+                  if (payload.sessionId) {
+                    sessionEl.value = payload.sessionId
+                    localStorage.setItem('agent-http.sessionId', payload.sessionId)
+                  }
+                },
+                onError: (message) => { closeAssistant('✗ 失败'); append('error', '错误：' + message, '服务端报错') },
+              })
+            }
+          }
+          chat.scrollTop = chat.scrollHeight
+        }
+        closeAssistant('✓ 完成')
+      } catch (e) {
+        closeAssistant('✗ 失败')
+        append('error', '请求失败：' + e.message, '网络错误')
+      } finally {
+        sendBtn.disabled = false
+        promptEl.focus()
+      }
+    }
+
+    sendBtn.addEventListener('click', run)
+    promptEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run() }
+    })
+    baseEl.addEventListener('change', () => {
+      localStorage.setItem('agent-http.base', baseEl.value.trim())
+      health()
+    })
+    tokenEl.addEventListener('change', () => {
+      localStorage.setItem('agent-http.token', tokenEl.value.trim())
+    })
+
+    health()
+  </script>
+</body>
+</html>

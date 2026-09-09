@@ -237,6 +237,7 @@
     { "path": "./packages/subprocess/win32-process" },
     { "path": "./packages/e2b/e2b" },
     { "path": "./packages/e2b/subprocess-e2b" },
+    { "path": "./packages/employ/employ-tools" },
     { "path": "./packages/shell/shell" },
     { "path": "./packages/terminal/terminal" },
     { "path": "./packages/terminal/terminal-bash" },
@@ -349,6 +350,7 @@
     { "path": "./packages/lsp/lsp" },
     { "path": "./packages/lsp/lsp-stdio" },
     { "path": "./packages/lsp/tool-lsp" },
+    { "path": "./packages/agent-http/agent-http" },
     { "path": "./apps/cli" },
     { "path": "./apps/desktop-host" },
     { "path": "./apps/desktop" }

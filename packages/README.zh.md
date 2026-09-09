@@ -37,6 +37,7 @@ harness 由 `packages/` 下的 npm 包组装而成，按能力系列分组：会
 | [`identity/`](identity/README.zh.md) | 共享匿名身份 |
 | [`llm/`](llm/README.zh.md) | LLM 能力系列：抽象服务 + 提供方适配器 |
 | [`e2b/`](e2b/README.zh.md) | E2B 远程运行时提供方 |
+| [`employ/`](employ/README.zh.md) | 国华就业管理集成：面向模型的基地/人员/合同/线索查询工具 |
 | [`subprocess/`](subprocess/README.zh.md) | 子进程能力系列：Service Definition + 本地进程树提供方 |
 | [`shell/`](shell/README.zh.md) | Bash 能力系列：执行器 seam、本地实现、面向模型的工具 |
 | [`terminal/`](terminal/README.zh.md) | 持久 PTY 能力系列：限定所有者范围的会话、本地实现、面向模型的工具 |
@@ -70,6 +71,7 @@ harness 由 `packages/` 下的 npm 包组装而成，按能力系列分组：会
 | [`workspace/`](workspace/README.zh.md) | Workspace 实体 |
 | [`sdk/`](sdk/README.zh.md) | 进程外 SDK：JSON-RPC 协议与 TypeScript 客户端／服务器 |
 | [`acp/`](acp/README.zh.md) | 仅面向自动化的 Agent Client Protocol 服务器 |
+| [`agent-http/`](agent-http/README.zh.md) | HTTP agent 服务：bundle + 插件，以 `/run` 与流式 `/run/stream` 暴露进程内 agent |
 | [`interaction/`](interaction/README.zh.md) | 人机协作平面：批准/交互 seam、权限预设、命令、询问用户的工具 |
 | [`boot/`](boot/README.zh.md) | 共享的 app bin 启动粘合层 |
 | [`host/`](host/README.zh.md) | web GUI 宿主半侧：API 网关 + HTTP 路由服务器 |
