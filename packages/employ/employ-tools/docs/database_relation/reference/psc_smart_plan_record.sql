@@ -1,0 +1,48 @@
+-- Table structure for psc_smart_plan_record
+-- ----------------------------
+DROP TABLE IF EXISTS `psc_smart_plan_record`;
+CREATE TABLE `psc_smart_plan_record` (
+  `plan_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '方案记录ID',
+  `plan_no` varchar(64) NOT NULL DEFAULT '' COMMENT '方案编号',
+  `plan_title` varchar(255) NOT NULL DEFAULT '' COMMENT '方案标题',
+  `company_name` varchar(255) NOT NULL DEFAULT '' COMMENT '客户名称',
+  `customer_id` int(11) NOT NULL DEFAULT 0 COMMENT '客户ID，没有则为0',
+  `region_code` varchar(16) NOT NULL DEFAULT '' COMMENT '用工地区编码',
+  `region_name` varchar(255) NOT NULL DEFAULT '' COMMENT '用工所在地',
+  `product_code` varchar(64) NOT NULL DEFAULT '' COMMENT '推荐产品编码',
+  `product_name` varchar(255) NOT NULL DEFAULT '' COMMENT '推荐产品名称',
+  `store_ids` varchar(500) NOT NULL DEFAULT '' COMMENT '匹配基地ID，逗号分隔',
+  `store_names` varchar(1000) NOT NULL DEFAULT '' COMMENT '匹配基地名称',
+  `employee_count` int(11) NOT NULL DEFAULT 0 COMMENT '在职职工人数',
+  `existing_light_count` int(11) NOT NULL DEFAULT 0 COMMENT '自有轻残人数',
+  `existing_heavy_count` int(11) NOT NULL DEFAULT 0 COMMENT '自有重残人数',
+  `plan_light_count` int(11) NOT NULL DEFAULT 0 COMMENT '方案轻残人数',
+  `plan_heavy_count` int(11) NOT NULL DEFAULT 0 COMMENT '方案重残人数',
+  `baseline_deposit` decimal(14,2) NOT NULL DEFAULT 0.00 COMMENT '全年无新增安置残保金',
+  `diff_deposit` decimal(14,2) NOT NULL DEFAULT 0.00 COMMENT '差额残保金',
+  `total_cost` decimal(14,2) NOT NULL DEFAULT 0.00 COMMENT '支出总计',
+  `saving` decimal(14,2) NOT NULL DEFAULT 0.00 COMMENT '全年节约成本',
+  `saving_rate` decimal(8,2) NOT NULL DEFAULT 0.00 COMMENT '节约率',
+  `html_url` varchar(512) NOT NULL DEFAULT '' COMMENT 'HTML OSS地址',
+  `pdf_url` varchar(512) NOT NULL DEFAULT '' COMMENT 'PDF OSS地址',
+  `html_content` longtext DEFAULT NULL COMMENT 'HTML内容快照',
+  `input_json` mediumtext DEFAULT NULL COMMENT '用户输入快照',
+  `result_json` mediumtext DEFAULT NULL COMMENT '完整生成结果快照',
+  `metrics_json` mediumtext DEFAULT NULL COMMENT '指标数据JSON',
+  `generation_trace_json` mediumtext DEFAULT NULL COMMENT 'LLM生成过程/trace',
+  `generate_status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '0生成中 1成功 2失败',
+  `error_msg` varchar(1000) NOT NULL DEFAULT '' COMMENT '失败原因',
+  `add_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '生成用户ID',
+  `add_username` varchar(128) NOT NULL DEFAULT '' COMMENT '生成用户名称',
+  `session_id` varchar(128) NOT NULL DEFAULT '' COMMENT '会话ID',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '1未删除 0已删除',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  PRIMARY KEY (`plan_id`),
+  UNIQUE KEY `uniq_plan_no` (`plan_no`),
+  KEY `idx_user_time` (`add_userid`,`add_time`),
+  KEY `idx_company_time` (`company_name`,`add_time`),
+  KEY `idx_region_product` (`region_code`,`product_code`)
+) ENGINE=InnoDB AUTO_INCREMENT=50 DEFAULT CHARSET=utf8mb4 COMMENT='PSC智能方案生成记录表';
+
+-- ----------------------------

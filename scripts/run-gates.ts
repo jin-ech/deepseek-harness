@@ -765,6 +765,7 @@ function docSyncLeafGates(options: {
       label: 'documentation site checks',
     }),
     pnpmScript('package-readme-limitations', 'verify-package-readme-limitations', { label: 'package README limitations', quick: true }),
+    pnpmScript('employ-relationships', 'verify-employ-relationships', { label: 'employ relationship catalog', quick: true }),
   ]
 }
 

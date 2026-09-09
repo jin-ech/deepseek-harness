@@ -1,0 +1,45 @@
+-- Table structure for base_guohua_user
+-- ----------------------------
+DROP TABLE IF EXISTS `base_guohua_user`;
+CREATE TABLE `base_guohua_user` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL COMMENT '成员名称',
+  `userid` varchar(64) NOT NULL DEFAULT '' COMMENT '企业微信用户id',
+  `enable` tinyint(4) NOT NULL DEFAULT 1 COMMENT '启用状态 1启用 0禁用',
+  `status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '激活状态: 1=已激活，2=已禁用，4=未激活，5=退出企业',
+  `main_department` varchar(255) NOT NULL DEFAULT '' COMMENT '主管部门',
+  `department` varchar(255) NOT NULL DEFAULT '' COMMENT '成员所属部门id列表',
+  `mobile` varchar(50) NOT NULL COMMENT '手机号',
+  `email` varchar(255) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `order` varchar(255) NOT NULL DEFAULT '' COMMENT '部门内的排序值',
+  `position` varchar(255) NOT NULL DEFAULT '' COMMENT '职务信息',
+  `gender` tinyint(4) NOT NULL DEFAULT 0 COMMENT '性别。0表示未定义，1表示男性，2表示女性',
+  `is_leader_in_dept` varchar(255) NOT NULL DEFAULT '' COMMENT '表示在所在的部门内是否为上级',
+  `avatar` varchar(255) NOT NULL DEFAULT '' COMMENT '头像url',
+  `thumb_avatar` varchar(255) NOT NULL COMMENT '头像缩略图url',
+  `telephone` varchar(255) NOT NULL COMMENT '座机',
+  `alias` varchar(255) NOT NULL DEFAULT '' COMMENT '别名',
+  `qr_code` varchar(255) NOT NULL DEFAULT '' COMMENT '员工个人二维码，扫描可添加为外部联系人',
+  `account_bank` varchar(255) NOT NULL DEFAULT '' COMMENT '开户银行',
+  `bank_number` varchar(255) NOT NULL DEFAULT '' COMMENT '银行卡号',
+  `address` varchar(255) NOT NULL DEFAULT '' COMMENT '地址',
+  `open_userid` varchar(255) NOT NULL DEFAULT '' COMMENT '全局唯一。对于同一个服务商，不同应用获取到企业内同一个成员的open_userid是相同的，最多64个字节。仅第三方应用可获取',
+  `isleader` varchar(255) NOT NULL DEFAULT '',
+  `leader_department` varchar(64) DEFAULT NULL COMMENT '负责部门id',
+  `update_time` datetime DEFAULT current_timestamp(),
+  `sort` int(11) DEFAULT 9999 COMMENT '排序',
+  `user_type` varchar(32) DEFAULT '0' COMMENT '是否销售 1是 0否',
+  `is_operate` varchar(32) DEFAULT '0' COMMENT '是否交付 1是 0否',
+  `is_service` varchar(32) DEFAULT '0' COMMENT '是否客服 1是 0否',
+  `hire_date` date DEFAULT NULL COMMENT '入职日期',
+  `dimission_date` date DEFAULT NULL COMMENT '离职日期',
+  `is_branch_hq` tinyint(4) DEFAULT 0 COMMENT '是否是分公司总 1：是 0：否',
+  `unique_id` varchar(1000) CHARACTER SET ascii DEFAULT NULL COMMENT '唯一标识: 加密(id|name|userid)，见 scripts/base_guohua_user_unique_id.py',
+  PRIMARY KEY (`id`) USING BTREE,
+  UNIQUE KEY `index_userid` (`userid`) USING BTREE COMMENT '唯一账号',
+  UNIQUE KEY `uk_unique_id` (`unique_id`),
+  KEY `index_name` (`name`) USING BTREE,
+  KEY `index_department` (`department`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=310 DEFAULT CHARSET=utf8mb4 COMMENT='通讯录表会员表';
+
+-- ----------------------------

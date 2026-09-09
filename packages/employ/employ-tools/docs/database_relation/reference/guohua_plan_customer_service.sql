@@ -1,0 +1,47 @@
+-- Table structure for guohua_plan_customer_service
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_plan_customer_service`;
+CREATE TABLE `guohua_plan_customer_service` (
+  `service_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `year` varchar(32) DEFAULT NULL COMMENT '年份2025',
+  `month` varchar(32) DEFAULT NULL COMMENT '月份2025-01',
+  `area_id` int(11) DEFAULT NULL COMMENT '地区id',
+  `area_name` varchar(32) DEFAULT NULL COMMENT '区域名称',
+  `department_id` varchar(32) DEFAULT NULL COMMENT '部门id',
+  `department_name` varchar(32) DEFAULT NULL COMMENT '部门名',
+  `service_department_id` int(11) DEFAULT NULL COMMENT '客服部门',
+  `service_department_name` varchar(255) DEFAULT NULL COMMENT '客服部门名称',
+  `service_userid` varchar(255) DEFAULT NULL COMMENT '客服人员id',
+  `service_username` varchar(255) DEFAULT NULL COMMENT '客服人员姓名',
+  `basic_customer` int(11) DEFAULT NULL COMMENT '基础客户数',
+  `basic_disabled` int(11) DEFAULT NULL COMMENT '基础残疾人数',
+  `basic_customer_a` int(11) DEFAULT NULL COMMENT '基础A级客户数',
+  `basic_customer_b` int(11) DEFAULT NULL COMMENT '基础B级客户数',
+  `basic_customer_c` int(11) DEFAULT NULL COMMENT '基础C级客户数',
+  `basic_dispatch_customer` int(11) DEFAULT NULL COMMENT '基础派遣客户数',
+  `month_report_total` int(11) DEFAULT NULL COMMENT '累计月报发放数',
+  `month_report_current` int(11) DEFAULT NULL COMMENT '本月月报发放数',
+  `month_report_current_residue` int(11) DEFAULT NULL COMMENT '本月剩余预报发放数',
+  `remind_payroll_total` int(11) DEFAULT NULL COMMENT '累计发薪提醒数',
+  `remind_payroll_current` int(11) DEFAULT NULL COMMENT '本月发薪提醒数',
+  `remind_payroll_current_residue` int(11) DEFAULT NULL COMMENT '剩余未提醒数',
+  `scheme_calculate_total` int(11) DEFAULT NULL COMMENT '累计方案测算数',
+  `scheme_calculate_current` int(11) DEFAULT NULL COMMENT '本月方案测算数',
+  `scheme_calculate_current_residue` int(11) DEFAULT NULL COMMENT '本月方案未测算数',
+  `product_loop` int(11) DEFAULT NULL COMMENT '劳动产品闭环家数',
+  `service_include` int(11) DEFAULT NULL COMMENT '服务费包含家数',
+  `service_offshore` int(11) DEFAULT NULL COMMENT '服务费外采家数',
+  `product_week_current` int(11) DEFAULT NULL COMMENT '本周新增劳动产品家数',
+  `fusion_activity` int(11) DEFAULT NULL COMMENT '融合活动开展家数',
+  `fusion_activity_service_include` int(11) DEFAULT NULL COMMENT '服务费包含家数',
+  `fusion_activity_service_offshore` int(11) DEFAULT NULL COMMENT '服务费外采家数',
+  `fusion_activity_week_current` int(11) DEFAULT NULL COMMENT '本周新增融合活动家数',
+  `fusion_activity_organized` int(11) DEFAULT NULL COMMENT '已组织融合活动家数',
+  `fusion_activity_unorganized` int(11) DEFAULT NULL COMMENT '未组织融合活动家数',
+  `add_time` datetime DEFAULT current_timestamp() COMMENT '添加时间',
+  `update_time` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `is_delete` tinyint(4) DEFAULT 1 COMMENT '是否删除 1未删除 0已删除',
+  PRIMARY KEY (`service_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8mb4 COMMENT='客户服务表';
+
+-- ----------------------------

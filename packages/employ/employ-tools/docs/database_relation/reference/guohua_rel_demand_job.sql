@@ -1,0 +1,45 @@
+-- Table structure for guohua_rel_demand_job
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_rel_demand_job`;
+CREATE TABLE `guohua_rel_demand_job` (
+  `demand_job_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '岗位需求ID',
+  `demand_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '需求ID',
+  `mission_id` varchar(64) NOT NULL DEFAULT '' COMMENT '任务ID',
+  `job_id` int(11) DEFAULT NULL COMMENT '岗位id',
+  `job_flag_name` varchar(255) NOT NULL DEFAULT '' COMMENT '岗位标识名',
+  `job_people_num` int(11) NOT NULL DEFAULT 0 COMMENT '岗位需求人数',
+  `job_people_three_num` int(11) NOT NULL DEFAULT 0 COMMENT '岗位需求三类人数',
+  `wait_allocate_num` int(11) NOT NULL DEFAULT 0 COMMENT '待下发人数',
+  `contract_start_date` varchar(255) NOT NULL DEFAULT '' COMMENT '合同开始日期',
+  `contract_end_date` varchar(255) NOT NULL DEFAULT '' COMMENT '合同结束日期',
+  `contract_fact_end_date` varchar(255) DEFAULT NULL COMMENT '合同实际结束日期',
+  `hire_type` varchar(64) NOT NULL DEFAULT '' COMMENT '雇佣类别(1:本区雇佣 2:本市雇佣 3:本省雇佣 4:异地雇佣)',
+  `disabled_extent` varchar(64) NOT NULL DEFAULT '' COMMENT '残疾程度(1:重残 2:轻残)',
+  `base_salary` varchar(255) NOT NULL DEFAULT '' COMMENT '基本薪资',
+  `job_salary` varchar(255) NOT NULL DEFAULT '' COMMENT '岗位薪资',
+  `job_subsidy` varchar(255) NOT NULL DEFAULT '' COMMENT '岗位津贴',
+  `performance_salary` varchar(255) NOT NULL DEFAULT '' COMMENT '绩效薪资',
+  `payment_date` varchar(255) NOT NULL DEFAULT '' COMMENT '付款日期',
+  `remarks` varchar(255) NOT NULL DEFAULT '' COMMENT '备注',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否删除 1未删除 0已删除',
+  `tmp_id` varchar(255) NOT NULL DEFAULT '' COMMENT '临时id',
+  `is_three_people` varchar(4) DEFAULT '0' COMMENT '是否需要三类人 1是 0否',
+  `gender` varchar(32) DEFAULT NULL COMMENT '性别要求',
+  `age` varchar(32) DEFAULT NULL COMMENT '年龄要求',
+  `disabled_type_id` varchar(32) DEFAULT NULL COMMENT '残疾类型',
+  `permanent_address_id` varchar(32) DEFAULT NULL COMMENT '户籍地址',
+  `bank_id` int(11) DEFAULT NULL COMMENT '银行id',
+  `history_contract_end_date` varchar(255) DEFAULT NULL COMMENT '历史合同结束日期',
+  `history_contract_fact_end_date` varchar(255) DEFAULT NULL COMMENT '历史合同实际结束日期',
+  `renew_status` int(11) DEFAULT NULL COMMENT '续签标识',
+  `store_id` int(11) NOT NULL DEFAULT 0 COMMENT '基地/门店id，关联 guohua_store.store_id，非必填(0表示未关联)',
+  PRIMARY KEY (`demand_job_id`) USING BTREE,
+  KEY `_index_demand_id` (`demand_id`) USING BTREE,
+  KEY `_index_demand_job_id` (`demand_job_id`) USING BTREE,
+  KEY `idx_demand_job_is_delete` (`is_delete`),
+  KEY `idx_demand_job_delete` (`is_delete`,`demand_job_id`),
+  KEY `idx_demand_job_demand_id` (`demand_id`,`is_delete`),
+  KEY `idx_store_id` (`store_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=23570 DEFAULT CHARSET=utf8mb4 COMMENT='就业管理系统-需求信息关联岗位需求表';
+
+-- ----------------------------

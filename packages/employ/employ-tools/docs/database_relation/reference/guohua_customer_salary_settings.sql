@@ -1,0 +1,46 @@
+-- Table structure for guohua_customer_salary_settings
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_customer_salary_settings`;
+CREATE TABLE `guohua_customer_salary_settings` (
+  `settings_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '设置id',
+  `contract_id` int(11) DEFAULT NULL COMMENT '合同id',
+  `demand_id` int(11) NOT NULL DEFAULT 0 COMMENT '需求id',
+  `customer_id` int(11) NOT NULL DEFAULT 0 COMMENT '客户id',
+  `is_min` tinyint(4) NOT NULL DEFAULT 2 COMMENT '是否为最低工资1:是 2:否',
+  `company_old_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '企业养老',
+  `persons_old_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '自身养老',
+  `company_medical_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '企业医疗',
+  `persons_medical_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '自身医疗',
+  `company_injury_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '企业工伤',
+  `persons_injury_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '自身工伤',
+  `company_work_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '企业失业',
+  `persons_work_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '自身失业',
+  `company_medicine_heavy_rate` varchar(11) DEFAULT '0' COMMENT '企业大病医疗',
+  `persons_medicine_heavy_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '自身大病医疗',
+  `our_medicine_extra_amount` decimal(10,2) DEFAULT 0.00 COMMENT '自身医疗额外金额',
+  `is_salary` tinyint(4) NOT NULL DEFAULT 2 COMMENT '是否含个人社保 1:是  2:否',
+  `social_security_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '社保缴纳基数',
+  `our_fund_rate` varchar(32) DEFAULT NULL COMMENT '自身公积金比例5%-12%',
+  `company_fund_rate` varchar(11) NOT NULL DEFAULT '0' COMMENT '公积金比例5%-12%',
+  `fund_base` int(11) NOT NULL DEFAULT 0 COMMENT '公积金缴费基数',
+  `company_salary` decimal(19,2) NOT NULL COMMENT '最低薪资',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '添加时间',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否删除 1未删除 0 已删除',
+  `is_payment_fund` tinyint(4) NOT NULL DEFAULT 1 COMMENT '企业是否交公积金 1是 0否',
+  `is_double_payment_fund` tinyint(4) NOT NULL DEFAULT 0 COMMENT '企业是否交1.2倍公积金 1是 0否',
+  `is_provident_fund` tinyint(4) NOT NULL DEFAULT 0 COMMENT '企业是否承担个人公积金1是0否',
+  `is_social_security` tinyint(4) NOT NULL DEFAULT 1 COMMENT '企业是否承担个人社保 1是 0否',
+  `is_double` tinyint(4) DEFAULT 0 COMMENT '是否1.2倍发放 1是 0否',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `old_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '养老基数',
+  `medical_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '医疗基数',
+  `injury_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '工伤基数',
+  `work_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '失业基数',
+  `medicine_heavy_base` float(11,2) NOT NULL DEFAULT 0.00 COMMENT '大病医疗基数',
+  `payroll_rules` tinyint(4) DEFAULT NULL COMMENT '发薪规则 1:当月发  2:次月发',
+  `is_show_job` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否显示岗位 1显示 0不显示',
+  PRIMARY KEY (`settings_id`) USING BTREE,
+  KEY `_index_customer_id` (`customer_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=10000101 DEFAULT CHARSET=utf8mb4 COMMENT='客户信息管理配置表';
+
+-- ----------------------------

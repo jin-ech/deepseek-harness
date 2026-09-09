@@ -1,0 +1,47 @@
+-- Table structure for guohua_work_task
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_work_task`;
+CREATE TABLE `guohua_work_task` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `task_sn` varchar(64) NOT NULL DEFAULT '' COMMENT '任务编号（雪花/业务编号，对外展示）',
+  `task_name` varchar(128) NOT NULL DEFAULT '' COMMENT '任务名称',
+  `assign_type` tinyint(4) NOT NULL DEFAULT 1 COMMENT '分配方式(单选) 1:按企业分配 2:按基地分配；目标均为旗下全部在职残疾人',
+  `assign_persons_method` tinyint(4) NOT NULL DEFAULT 1 COMMENT '分配对象确定方式(单选) 1:全部人员(后台定时任务存储人员） 2：部分人员',
+  `freq_type` tinyint(4) NOT NULL DEFAULT 1 COMMENT '频次 1:一次性 2:日 3:周 4:月',
+  `freq_config` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '频次细则：周→{weekdays:[1,3,5]} 月→{days:[1,15]} 日→{} 一次性→null',
+  `group_customer_id` int(10) unsigned DEFAULT NULL COMMENT '所属集团客户ID（可空，不一定有集团），关联 guohua_customer.customer_id；冗余快照，写入时与 rel_target.group_customer_id 保持一致',
+  `group_customer_name` varchar(128) NOT NULL DEFAULT '' COMMENT '集团客户名称（冗余，无集团时为空）',
+  `type_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '一级类型ID，关联 guohua_work_task_type.id',
+  `subtype_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '子类型ID，关联 guohua_work_task_subtype.id',
+  `product_ids` varchar(2000) NOT NULL DEFAULT '' COMMENT '劳动产品ID集合，英文逗号分隔',
+  `config_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '管理端任务配置实际值，结构由 config_schema_snapshot 决定',
+  `config_schema_snapshot` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '创建任务时的管理端配置表单schema快照，用于详情回显',
+  `submit_schema_snapshot` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '创建任务时的执行人提交表单schema快照，用于成果提交/回显',
+  `rule_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL COMMENT '规则配置（如定时任务的 cron 表达式等，结构由前端定义）',
+  `publish_time` datetime DEFAULT NULL COMMENT '发布时间',
+  `publish_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '发布人 userid',
+  `start_time` datetime DEFAULT NULL COMMENT '任务开始时间',
+  `end_time` datetime DEFAULT NULL COMMENT '任务结束时间',
+  `task_desc` varchar(2000) NOT NULL DEFAULT '' COMMENT '任务说明',
+  `task_status` tinyint(4) NOT NULL DEFAULT 10 COMMENT '任务状态 10:草稿/暂存 20:发布中 30:未开始 40:进行中 50:已完成 60:已终止/已取消 70:已暂停',
+  `terminate_reason` varchar(500) NOT NULL DEFAULT '' COMMENT '终止/取消原因（task_status=60 时填写）',
+  `terminate_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '终止操作人 userid',
+  `terminate_time` datetime DEFAULT NULL COMMENT '终止时间',
+  `pause_reason` varchar(500) NOT NULL DEFAULT '' COMMENT '暂停原因（task_status=70 时填写）',
+  `pause_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '暂停操作人 userid',
+  `pause_time` datetime DEFAULT NULL COMMENT '暂停时间',
+  `add_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '创建人 userid',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
+  `update_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人 userid',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否删除 1:未删除 0:已删除',
+  `add_customer_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_task_sn` (`task_sn`),
+  KEY `idx_group_customer_id` (`group_customer_id`),
+  KEY `idx_type` (`type_id`,`subtype_id`),
+  KEY `idx_task_status` (`task_status`),
+  KEY `idx_freq_status` (`freq_type`,`task_status`)
+) ENGINE=InnoDB AUTO_INCREMENT=155 DEFAULT CHARSET=utf8mb4 COMMENT='工作任务主表';
+
+-- ----------------------------

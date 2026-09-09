@@ -1,0 +1,47 @@
+-- Table structure for persons_work
+-- ----------------------------
+DROP TABLE IF EXISTS `persons_work`;
+CREATE TABLE `persons_work` (
+  `work_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '工作经历id',
+  `persons_id` varchar(64) NOT NULL DEFAULT '' COMMENT '残疾人id',
+  `work_type` varchar(64) NOT NULL DEFAULT '' COMMENT '工作类型 1:入职 2:离职',
+  `start_date` varchar(64) NOT NULL DEFAULT '' COMMENT '劳动合同生效时间',
+  `end_date` varchar(64) NOT NULL DEFAULT '' COMMENT '劳动合同结束时间',
+  `actual_end_date` varchar(64) DEFAULT NULL COMMENT '实际结束时间',
+  `customer_name` varchar(255) NOT NULL DEFAULT '' COMMENT '所属客户',
+  `customer_source` varchar(255) NOT NULL DEFAULT '' COMMENT '客户来源',
+  `job_name` varchar(255) DEFAULT '' COMMENT '岗位',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '添加时间',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `add_userid` varchar(255) DEFAULT NULL COMMENT '添加人',
+  `update_userid` varchar(255) DEFAULT NULL COMMENT '更新人',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否删除1未删除 0已删除',
+  `quit_reason` varchar(255) NOT NULL DEFAULT '' COMMENT '离职原因',
+  `quit_way` varchar(10) NOT NULL DEFAULT '' COMMENT '离职方式 1:在岗离职 2:未上岗离职 3:辞退 4:转岗 5:劳动合同期满终止',
+  `social_end_month` varchar(10) NOT NULL DEFAULT '' COMMENT '社保缴纳停止月',
+  `fund_end_month` varchar(10) NOT NULL DEFAULT '' COMMENT '公积金缴纳停止月',
+  `persons_describe` varchar(255) NOT NULL DEFAULT '' COMMENT '人员描述 转签/新签',
+  `bank_name` varchar(255) DEFAULT '' COMMENT '银行名称',
+  `bank_number` varchar(255) DEFAULT '' COMMENT '银行卡号',
+  `match_id` int(11) DEFAULT 0 COMMENT '人岗匹配id',
+  `contract_id` int(11) DEFAULT 0 COMMENT '合同id',
+  `customer_id` int(11) DEFAULT NULL COMMENT '客户id',
+  `demand_id` int(11) NOT NULL DEFAULT 0 COMMENT '需求id',
+  `contract_type` tinyint(4) DEFAULT NULL COMMENT '人员合同状态 1:已邮寄 2:已回收',
+  `history_work_id` int(11) DEFAULT NULL COMMENT '历史工作经历id	',
+  `renew_status` int(11) DEFAULT NULL COMMENT '续签标识',
+  PRIMARY KEY (`work_id`) USING BTREE,
+  KEY `work_persons_id` (`persons_id`) USING BTREE COMMENT '工作经历成员索引',
+  KEY `index_match_id` (`match_id`) USING BTREE COMMENT '人岗匹配id',
+  KEY `index_customer_id` (`customer_id`) USING BTREE COMMENT '客户id',
+  KEY `index_customer_name` (`customer_name`) USING BTREE COMMENT '客户名',
+  KEY `idx_work_persons_id` (`persons_id`,`start_date`,`end_date`,`work_id`),
+  KEY `idx_persons_id_start_date_ac_end_date` (`persons_id`,`start_date`,`actual_end_date`),
+  KEY `idx_pw_persons_date` (`persons_id`,`start_date`,`actual_end_date`),
+  KEY `idx_pw_isdel_pid_dates_wid` (`is_delete`,`persons_id`,`start_date`,`end_date`,`work_id`),
+  KEY `idx_pw_del_cid_pid` (`is_delete`,`customer_id`,`persons_id`),
+  KEY `idx_pw_del_cname_pid` (`is_delete`,`customer_name`,`persons_id`),
+  KEY `idx_pw_matchid_del_start` (`match_id`,`is_delete`,`start_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=58374 DEFAULT CHARSET=utf8mb4 COMMENT='残疾人工作经历表-就职记录表';
+
+-- ----------------------------

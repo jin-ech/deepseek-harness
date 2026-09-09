@@ -1,0 +1,47 @@
+-- Table structure for guohua_work_task_schedule_detail
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_work_task_schedule_detail`;
+CREATE TABLE `guohua_work_task_schedule_detail` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+  `task_id` int(10) unsigned NOT NULL COMMENT '排班任务ID，关联 guohua_work_task.id',
+  `schedule_period_id` int(10) unsigned NOT NULL COMMENT '排班周期ID，关联 guohua_work_task_schedule_period.id',
+  `period_key` varchar(16) NOT NULL DEFAULT '' COMMENT '周期锚点(冗余，便于按周期查询)',
+  `schedule_date` date NOT NULL COMMENT '具体排班日期(必为本期有效工作日)',
+  `day_seq` int(10) unsigned NOT NULL DEFAULT 1 COMMENT '当天名额序号(同日多人时 1,2,3…)，用于当天内排序',
+  `person_rel_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '人员分配记录ID，关联 guohua_rel_work_task_person.id',
+  `persons_id` varchar(64) NOT NULL DEFAULT '' COMMENT '残疾人ID，关联 persons.persons_id',
+  `persons_name` varchar(64) NOT NULL DEFAULT '' COMMENT '残疾人姓名(冗余)',
+  `group_customer_id` int(10) unsigned DEFAULT NULL COMMENT '所属集团客户ID(冗余)，无集团时 NULL',
+  `customer_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '所属子企业ID(冗余)，关联 guohua_customer.customer_id',
+  `store_id` int(10) unsigned NOT NULL DEFAULT 0 COMMENT '所属基地/服务站点ID(冗余)，关联 guohua_store.store_id',
+  `store_name` varchar(128) NOT NULL DEFAULT '' COMMENT '服务站点/基地名称快照',
+  `content_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '工作内容ID，关联 guohua_work_position_content.id',
+  `content_name` varchar(200) NOT NULL DEFAULT '' COMMENT '工作内容名称快照，如"河道巡护"',
+  `position_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '所属岗位ID(冗余)，关联 guohua_work_position.id',
+  `position_name` varchar(100) NOT NULL DEFAULT '' COMMENT '岗位名称快照，如"农村互助合作站协管员"',
+  `source` tinyint(4) NOT NULL DEFAULT 1 COMMENT '来源 1:自动排班 2:手动排班/调整',
+  `remarks` varchar(500) NOT NULL DEFAULT '' COMMENT '备注（特殊情况说明/调班/请假等）',
+  `add_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '创建人 userid（cron=system）',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
+  `update_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '更新人 userid',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '是否删除 1:未删除 0:已删除',
+  `schedule_status` tinyint(4) NOT NULL DEFAULT 10 COMMENT '10正常 20请假挂起（排班仍保留，不作为有效待办）',
+  `leave_id` bigint(20) unsigned NOT NULL DEFAULT 0 COMMENT '关联请假单ID',
+  `hold_reason` varchar(100) NOT NULL DEFAULT '' COMMENT '挂起原因 本业务写"请假"',
+  `hold_time` datetime DEFAULT NULL COMMENT '挂起时间',
+  `hold_userid` varchar(36) NOT NULL DEFAULT '' COMMENT '操作人或 system',
+  `submit_id` int(11) DEFAULT 0,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_task_date_person` (`task_id`,`schedule_date`,`persons_id`),
+  KEY `idx_period` (`schedule_period_id`),
+  KEY `idx_task_period_person` (`task_id`,`period_key`,`persons_id`),
+  KEY `idx_task_date` (`task_id`,`schedule_date`),
+  KEY `idx_date_person_active` (`schedule_date`,`persons_id`,`is_delete`),
+  KEY `idx_persons_id` (`persons_id`),
+  KEY `idx_content_id` (`task_id`,`content_id`),
+  KEY `idx_position_id` (`task_id`,`position_id`),
+  KEY `idx_person_status_date` (`persons_id`,`schedule_status`,`schedule_date`)
+) ENGINE=InnoDB AUTO_INCREMENT=15451 DEFAULT CHARSET=utf8mb4 COMMENT='排班明细表(某人在某工作日的一次排班，排班任务结构化核心数据)';
+
+-- ----------------------------

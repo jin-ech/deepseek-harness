@@ -1,0 +1,45 @@
+-- Table structure for guohua_ailifang_product_order
+-- ----------------------------
+DROP TABLE IF EXISTS `guohua_ailifang_product_order`;
+CREATE TABLE `guohua_ailifang_product_order` (
+  `ailifang_product_order_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '爱立方订单商品明细主键',
+  `product_order_num` varchar(64) NOT NULL COMMENT '爱立方订单号，同一订单可有多条商品明细',
+  `order_source` tinyint(4) NOT NULL DEFAULT 2 COMMENT '订单来源：2爱立方',
+  `product_type` int(11) NOT NULL DEFAULT 0 COMMENT '产品类型：0未分类 1普通 2高端 3定制',
+  `product_order_type` tinyint(4) NOT NULL DEFAULT 2 COMMENT '分配方式：1指定基地 2未指定基地',
+  `store_id` varchar(1000) NOT NULL DEFAULT '' COMMENT '实际分配基地ID集合',
+  `store_type` tinyint(4) NOT NULL DEFAULT 0 COMMENT '基地类型：0未分配 1职康站 2帮扶性就业基地',
+  `order_status` tinyint(4) NOT NULL DEFAULT 5 COMMENT '订单状态：销售明细已付款，导入为5已完成',
+  `assign_status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '分配状态：1待分配 2已分配',
+  `sp_status` tinyint(4) NOT NULL DEFAULT 1 COMMENT '确认状态：1已确认',
+  `sku` varchar(64) NOT NULL DEFAULT '' COMMENT '京东SKU',
+  `spu` varchar(64) NOT NULL DEFAULT '' COMMENT '京东SPU',
+  `product_name` varchar(1000) NOT NULL DEFAULT '' COMMENT '商品名称',
+  `pre_discount_amount` decimal(16,2) NOT NULL DEFAULT 0.00 COMMENT '优惠前金额',
+  `product_num` int(11) NOT NULL DEFAULT 0 COMMENT '成交订单商品件数',
+  `discount_amount` decimal(16,2) NOT NULL DEFAULT 0.00 COMMENT '优惠金额',
+  `order_amount` decimal(16,2) NOT NULL DEFAULT 0.00 COMMENT '订单商品明细成交金额',
+  `freight_amount` decimal(16,2) NOT NULL DEFAULT 0.00 COMMENT '运费',
+  `service_fee` decimal(16,2) NOT NULL DEFAULT 0.00 COMMENT '服务费',
+  `order_date` date DEFAULT NULL COMMENT '销售明细日期',
+  `order_time` datetime DEFAULT NULL COMMENT '下单时间',
+  `payment_time` datetime DEFAULT NULL COMMENT '付款时间',
+  `payment_method` varchar(64) NOT NULL DEFAULT '' COMMENT '付款方式',
+  `source_file` varchar(255) NOT NULL DEFAULT '' COMMENT '来源文件名',
+  `source_sheet` varchar(128) NOT NULL DEFAULT '' COMMENT '来源工作表',
+  `source_row_no` int(11) NOT NULL DEFAULT 0 COMMENT '来源Excel行号',
+  `source_hash` char(64) NOT NULL COMMENT '来源行SHA-256，用于幂等导入',
+  `remarks` varchar(500) NOT NULL DEFAULT '' COMMENT '备注',
+  `add_userid` varchar(64) NOT NULL DEFAULT '' COMMENT '创建人',
+  `add_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
+  `is_delete` tinyint(4) NOT NULL DEFAULT 1 COMMENT '1未删除 0已删除',
+  PRIMARY KEY (`ailifang_product_order_id`),
+  UNIQUE KEY `uk_ailifang_order_source_hash` (`source_hash`),
+  KEY `idx_ailifang_order_num` (`product_order_num`),
+  KEY `idx_ailifang_order_date` (`order_date`),
+  KEY `idx_ailifang_order_sku` (`sku`),
+  KEY `idx_ailifang_order_status` (`order_status`,`assign_status`,`is_delete`)
+) ENGINE=InnoDB AUTO_INCREMENT=16927 DEFAULT CHARSET=utf8mb4 COMMENT='爱立方劳动产品销售订单商品明细表';
+
+-- ----------------------------
