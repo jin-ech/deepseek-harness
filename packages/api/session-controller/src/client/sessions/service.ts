@@ -453,6 +453,19 @@ export class ClientSessions implements ISessions {
   }
 
   /**
+   * Delete a Session: dispose its live Agent, detach from all workspaces,
+   * and remove the persisted log files. On resolution the session is gone
+   * from the list store; if it was the current selection, the selection
+   * clears into the New Session view state.
+   * @param id - session id to delete.
+   */
+  async deleteSession(id: SessionId): Promise<void> {
+    const result = await this.manager.deleteSession(id)
+    if (!result.ok) throw new Error(`session delete failed: ${result.error.code}: ${result.error.message}`)
+    this.projectList()
+  }
+
+  /**
    * Resolve an Agent-scoped context view (use-and-discard).
    * @param id - session id (the agent identity — 1:1 same axis).
    * @returns scoped ctx, or undefined for a session neither listed nor already scoped.

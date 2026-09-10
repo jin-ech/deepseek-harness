@@ -489,6 +489,31 @@ class JsonlSessionPersistence extends SessionPersistence {
     return snapshots
   }
 
+  /**
+   * Delete a stored session's log files from disk. Idempotent: a missing
+   * session resolves without error.
+   * @param id - the stored session to delete.
+   * @param options - optional cancellation.
+   */
+  async delete(id: SessionId, options?: { readonly signal?: AbortSignal }): Promise<void> {
+    const signal = options?.signal
+    signal?.throwIfAborted()
+    // Remove any pending (unmaterialized) entry for this session.
+    this.tracker.removePending(id)
+    this.coldLogMemo.delete(id)
+    this.migrationPreparations.delete(id)
+    // Find and remove the session directory (which contains all generation files).
+    const selected = await this.findLog(id, signal)
+    if (selected === undefined) return
+    const dir = dirname(selected.sourcePath)
+    try {
+      await rm(dir, { recursive: true, force: true })
+    } catch (error: unknown) {
+      signal?.throwIfAborted()
+      if (!isENOENT(error)) throw error
+    }
+  }
+
   // --- handle-facing storage internals (package-private via the handle class below) ---
 
   /** Resolve and read one stored log, refusing loudly when the artifact is absent. */

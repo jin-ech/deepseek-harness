@@ -356,6 +356,16 @@ export interface SessionCancelValue {
   readonly accepted: true
 }
 
+/** Session deletion request. */
+export interface SessionDeleteRequest {
+  readonly sessionId: SessionId
+}
+
+/** Receipt after one Session is deleted. */
+export interface SessionDeleteValue {
+  readonly deleted: true
+}
+
 /** Request to open one path prepared by a Session-aware caller on the Host desktop. */
 export interface SessionOpenWorkspacePathRequest {
   /** File-manager navigation when requested; omission uses the default application. */

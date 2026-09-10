@@ -33,6 +33,8 @@ import type {
   SessionControlFrame,
   SessionCreateRequest,
   SessionCreateValue,
+  SessionDeleteRequest,
+  SessionDeleteValue,
   SessionFollowFrame,
   SessionFollowRequest,
   SessionForkRequest,
@@ -91,6 +93,7 @@ export class SessionController extends TypertRemoteService {
     'attachments',
     'fileUploads',
     'llm',
+    'sessionPersistence',
     'sessions',
     'sessionProjections',
     'sessionQuery',
@@ -111,6 +114,13 @@ export class SessionController extends TypertRemoteService {
   private readonly revealPath: (path: string, signal: AbortSignal) => Promise<void>
   private readonly canOpenPath: () => boolean
   private readonly promotions = new Set<Promise<void>>()
+  /**
+   * Sessions whose persistence files have been deleted but whose Agent may
+   * still be in memory (draining before its Cordis fiber disposes it).
+   * `list()` filters these out so a refresh after delete does not resurrect
+   * the row. Cleared on `session/disposed`.
+   */
+  readonly deletedSessions: Set<SessionId> = new Set()
 
   /**
    * @param ctx - Host context containing the Session capability assembly.
@@ -147,6 +157,7 @@ export class SessionController extends TypertRemoteService {
       ctx.emit('api-session/added', this.listState.summaryFor(session))
     })
     ctx.on('session/disposed', (session) => {
+      this.deletedSessions.delete(session.id)
       ctx.emit('api-session/removed', session.id)
     })
     ctx.on('agent/status', ({ agent, status }) => {
@@ -376,6 +387,17 @@ export class SessionController extends TypertRemoteService {
   @Remote('cancel')
   cancel(request: SessionCancelRequest): SessionCancelValue {
     return this.commands.cancel(request)
+  }
+
+  /**
+   * Delete one Session: dispose its live Agent, detach from all workspaces,
+   * and remove the persisted log files.
+   * @param request - Session identity to delete.
+   * @returns confirmation that the Session was deleted.
+   */
+  @Remote('delete')
+  delete(request: SessionDeleteRequest): Promise<SessionDeleteValue> {
+    return this.commands.delete(request)
   }
 
   /**

@@ -127,9 +127,13 @@ export class ApiSessionList {
     signal?.throwIfAborted()
     const records = await this.ctx.sessionQuery.listSessions(signal)
     signal?.throwIfAborted()
+    const deleted = this.ctx.sessionController.deletedSessions
     const items: SessionSummary[] = []
     const cold: SessionHeader[] = []
     for (const record of records) {
+      // Skip sessions whose persistence files have been deleted but whose
+      // Agent may still be draining before its Cordis fiber disposes it.
+      if (deleted.has(record.header.id)) continue
       const live = this.ctx.sessions.get(record.header.id)
       if (live !== undefined) {
         items.push(this.summaryFor(live))

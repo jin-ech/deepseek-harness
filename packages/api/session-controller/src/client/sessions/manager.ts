@@ -615,6 +615,21 @@ export class SessionManager {
   }
 
   /**
+   * Contract session.delete; on success remove the session from summaries
+   * immediately. If the deleted session was the current selection, clear it.
+   * @param id - session id to delete.
+   * @returns the generated Remote result.
+   */
+  async deleteSession(id: SessionId): Promise<RemoteResult<{ deleted: true }>> {
+    const result = await this.remote.session.delete({ sessionId: id })
+    if (result.ok) {
+      if (this.selected === id) this.selected = undefined
+      this.recordMutation({ kind: 'remove', sessionId: id })
+    }
+    return result
+  }
+
+  /**
    * Insert-or-enrich a locally synthesized summary: a new id prepends; an
    * existing entry only gains fields it lacks (the session-added frame and the
    * create() echo race — whichever lands second must fill the placeholder's

@@ -39,6 +39,8 @@ import type {
   SessionCancelValue,
   SessionCreateRequest,
   SessionCreateValue,
+  SessionDeleteRequest,
+  SessionDeleteValue,
   SessionForkRequest,
   SessionForkValue,
   SessionPromptRequest,
@@ -508,6 +510,45 @@ export class SessionCommandController {
     }
     agent.cancel({ kind: 'user' }, { keepInbox: true })
     return { accepted: true }
+  }
+
+  /**
+   * Delete one Session: dispose its live Agent, detach from all workspaces,
+   * and remove the persisted log files.
+   * @param request - Session identity to delete.
+   * @returns confirmation that the Session was deleted.
+   */
+  async delete(request: SessionDeleteRequest): Promise<SessionDeleteValue> {
+    const sessionId = request.sessionId
+    // Cancel the live Agent if attached (best-effort; a missing Agent is fine).
+    // keepInbox: false drops pending work since the session is being deleted.
+    const agent = this.ctx.agents.get(sessionId)
+    if (agent !== undefined) {
+      if (hasApiSessionSubagentOwner(this.ctx, agent.session, agent)) {
+        throw apiSessionSubagentOwnershipError(sessionId)
+      }
+      agent.cancel({ kind: 'user' }, { keepInbox: false })
+    }
+    // Detach from every workspace that references this session.
+    for (const workspace of this.ctx.workspaceRegistry.list()) {
+      if (workspace.sessionIds.includes(sessionId)) {
+        await workspace.detachSession(sessionId)
+      }
+    }
+    // Remove from the archive set if present (the session will no longer exist).
+    const archived = this.ctx.workspaceRegistry.archivedSessionIds
+    if (archived.includes(sessionId)) {
+      await this.ctx.workspaceRegistry.unarchiveSession(sessionId)
+    }
+    // Delete the persisted log files.
+    const persistence = this.ctx.sessionPersistence
+    if (persistence !== undefined) {
+      await persistence.delete(sessionId)
+    }
+    // Mark as deleted so list() filters it out while the Agent drains before
+    // its Cordis fiber disposes it (session/disposed clears the mark).
+    this.ctx.sessionController.deletedSessions.add(sessionId)
+    return { deleted: true }
   }
 
   private async resolveAgent(sessionId: SessionId): Promise<Agent> {

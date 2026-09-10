@@ -517,6 +517,11 @@ export class TestSessions implements ISessions {
     return Promise.resolve(opts.sessionId)
   }
 
+  /** No-op delete stub; fixture callers drive removal through {@link TestSessions.remove}. */
+  deleteSession(_id: SessionId): Promise<void> {
+    return Promise.resolve()
+  }
+
   /**
    * The session face of a fixture (typed view for assertions; fixture
    * behavior methods are grafted onto it).

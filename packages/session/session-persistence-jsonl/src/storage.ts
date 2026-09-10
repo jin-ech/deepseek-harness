@@ -474,6 +474,20 @@ export class JsonlBackendTracker {
   }
 
   /**
+   * Remove a pending entry for a session being deleted. Also drops any active
+   * write handle and open-handle bookkeeping so the delete leaves no trace.
+   * @param id - the session being deleted.
+   */
+  removePending(id: SessionId): void {
+    this.pending.delete(id)
+    const writer = this.writers.get(id)
+    if (writer !== undefined && writer !== null) {
+      this.openHandles.delete(writer)
+      this.writers.delete(id)
+    }
+  }
+
+  /**
    * Track one open handle for teardown and, for a write handle, bind it as
    * the session's live event route.
    * @param handle - the just-constructed handle.

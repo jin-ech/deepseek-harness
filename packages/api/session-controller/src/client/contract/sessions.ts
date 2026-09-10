@@ -96,6 +96,14 @@ export interface ISessions {
    */
   fork(opts: { sessionId: SessionId; atSeq?: number; increaseTitle?: boolean }): Promise<SessionId>
   /**
+   * Delete a Session: dispose its live Agent, detach from all workspaces,
+   * and remove the persisted log files. On resolution the session is gone
+   * from the list store; if it was the current selection, the selection
+   * clears into the New Session view state.
+   * @param id - session id to delete.
+   */
+  deleteSession(id: SessionId): Promise<void>
+  /**
    * Resolve an Agent-scoped context view (use-and-discard).
    * @param id - session id.
    * @returns scoped ctx, or undefined for a session neither listed nor already scoped.

@@ -196,6 +196,15 @@ export abstract class SessionPersistence extends Service {
    * @returns one snapshot per stored session.
    */
   abstract list(options?: SessionPersistenceListOptions): Promise<readonly SessionPersistenceSnapshot[]>
+
+  /**
+   * Delete a stored session's log files from disk. After resolution the
+   * session no longer appears in `list`/`stat`/`open`. A missing session
+   * resolves without error (idempotent).
+   * @param id - the stored session to delete.
+   * @param options - optional cancellation.
+   */
+  abstract delete(id: SessionId, options?: { readonly signal?: AbortSignal }): Promise<void>
 }
 
 export default SessionPersistence
