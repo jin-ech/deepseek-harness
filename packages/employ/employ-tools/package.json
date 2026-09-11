@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-employ-tools",
   "description": "Model-facing read-only employment management query tools (schema discovery and any-table relationship joins) over the Guohua MySQL business database",
-  "version": "0.1.3-alpha.2",
+  "version": "0.1.5-rc.1",
   "publishConfig": {
     "access": "public"
   },

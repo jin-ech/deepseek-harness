@@ -1,7 +1,7 @@
 /** Build and launch the unpackaged Electron shell against the current workspace. */
 
 import { spawn } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { join, resolve } from 'node:path'
 import { parseArgs } from 'node:util'
@@ -50,7 +50,24 @@ async function runPackageScript(script: string, cwd: string): Promise<void> {
   if (packageManager === undefined || packageManager === '') {
     throw new Error('desktop development: invoke this launcher through pnpm run dev:desktop or start:desktop')
   }
-  await run(process.execPath, [packageManager, 'run', script], cwd)
+  // @pnpm/exe ships a native binary; detect it so we spawn the binary directly
+  // instead of passing it as a script argument to Node.js.
+  let isNativeBinary = false
+  try {
+    const st = statSync(packageManager)
+    if (st.size > 1_000_000) {
+      const fd = readFileSync(packageManager).subarray(0, 4)
+      const isMacho = (fd[0] === 0xCF && fd[1] === 0xFA) || (fd[0] === 0xFE && fd[1] === 0xED)
+      const isElf = fd[0] === 0x7F && fd[1] === 0x45 && fd[2] === 0x4C && fd[3] === 0x46
+      const isPe = fd[0] === 0x4D && fd[1] === 0x5A
+      isNativeBinary = isMacho || isElf || isPe
+    }
+  } catch { /* fall through to default behavior */ }
+  if (isNativeBinary) {
+    await run(packageManager, ['run', script], cwd)
+  } else {
+    await run(process.execPath, [packageManager, 'run', script], cwd)
+  }
 }
 
 async function launchElectron(projectDir: string): Promise<void> {

@@ -1,7 +1,7 @@
 /** Build one release target with matching Electron, Node.js, and seed architecture. */
 
 import { spawn } from 'node:child_process'
-import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, renameSync, rmSync, writeFileSync, statSync } from 'node:fs'
 import { parseArgs } from 'node:util'
 import { join, resolve } from 'node:path'
 import {
@@ -221,12 +221,29 @@ function runPnpm(
   if (pnpmEntry === undefined || pnpmEntry === '') {
     throw new Error('desktop package: invoke this script through a pnpm package command')
   }
+  // @pnpm/exe ships a native binary; detect it so we spawn the binary directly
+  // instead of passing it as a script argument to Node.js.
+  let isNativeBinary = false
+  try {
+    const st = statSync(pnpmEntry)
+    // A JS entry point is typically < 1 MB; native binaries are much larger.
+    // Also check the first bytes for a shebang or ELF/Mach-O magic.
+    if (st.size > 1_000_000) {
+      const fd = readFileSync(pnpmEntry).subarray(0, 4)
+      // Mach-O: 0xCF 0xFA 0xED 0xFE or 0xFE 0xED 0xFA 0xCF
+      // ELF:    0x7F 0x45 0x4C 0x46
+      // PE:     0x4D 0x5A
+      const isMacho = (fd[0] === 0xCF && fd[1] === 0xFA) || (fd[0] === 0xFE && fd[1] === 0xED)
+      const isElf = fd[0] === 0x7F && fd[1] === 0x45 && fd[2] === 0x4C && fd[3] === 0x46
+      const isPe = fd[0] === 0x4D && fd[1] === 0x5A
+      isNativeBinary = isMacho || isElf || isPe
+    }
+  } catch { /* fall through to default behavior */ }
+
   return new Promise((resolvePromise, reject) => {
-    const child = spawn(process.execPath, [pnpmEntry, ...args], {
-      cwd,
-      env,
-      stdio: 'inherit',
-    })
+    const child = isNativeBinary
+      ? spawn(pnpmEntry, args, { cwd, env, stdio: 'inherit' })
+      : spawn(process.execPath, [pnpmEntry, ...args], { cwd, env, stdio: 'inherit' })
     child.once('error', reject)
     child.once('close', (code, signal) => {
       if (code === 0) resolvePromise()

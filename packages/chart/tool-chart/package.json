@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-tool-chart",
   "description": "ECharts chart generation tool for the DeepSeek Harness — generates interactive charts from structured ECharts options",
-  "version": "0.1.0",
+  "version": "0.1.5-rc.1",
   "publishConfig": {
     "access": "public"
   },

@@ -163,8 +163,7 @@
 .localBuildBrand {
   flex: none;
   display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   gap: 1px;
   height: 24px;
@@ -172,9 +171,9 @@
 }
 
 .localBuildTitle {
-  font-size: 12px;
-  line-height: 13px;
+  font-size: 16px;
   letter-spacing: 0;
+  margin-right: 4px;
 }
 
 .iconButton {
@@ -242,6 +241,22 @@
   font-size: 6px;
   font-weight: 500;
   line-height: 10px;
+  white-space: nowrap;
+}
+
+.harnessBadge {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  height: 14px;
+  padding: 0 5px;
+  border-radius: 3px;
+  color: var(--dsw-alias-label-primary-inverted);
+  background: var(--dsw-alias-label-primary);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 14px;
   white-space: nowrap;
 }
 

@@ -6,7 +6,7 @@
  * emits fences and nothing changes.
  *
  * The section uses the host's centrally allocated structured-output placement.
- * @module @changfenhuang/dsh-genui
+ * @module @deepseek-ai/dsh-genui
  */
 
 import { Context } from '@deepseek-ai/cordis'
@@ -34,7 +34,7 @@ import { createRenderUiTool, createValidateDshUiTool } from './tool.ts'
  */
 
 /** Route prefix under /plugins; anything under it is this plugin's asset. */
-const ASSET_ROUTE_PATH = '/plugins/@changfenhuang/dsh-genui/assets'
+const ASSET_ROUTE_PATH = '/plugins/@deepseek-ai/dsh-genui/assets'
 
 /** Safe flat file names only: no slashes, no traversal, js assets only. */
 const ASSET_FILE_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*\.js$/

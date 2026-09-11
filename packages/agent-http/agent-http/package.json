@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-agent-http",
   "description": "HTTP server plugin exposing the in-process agent: /run and streaming /run/stream over an agent + session profile",
-  "version": "0.1.3-alpha.2",
+  "version": "0.1.5-rc.1",
   "publishConfig": {
     "access": "public"
   },

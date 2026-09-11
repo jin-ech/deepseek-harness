@@ -55,13 +55,13 @@
     # registers the render_ui / validate_dsh_ui tools; browser half renders
     # the fence through GenuiBlock.
     - id: genui
-      name: '@changfenhuang/dsh-genui'
+      name: '@deepseek-ai/dsh-genui'
 
     # Memory Evolve: layered memory (global/user/project/git-branch/daily),
     # self-evolution (experience distillation + skill auto-creation), skill
     # management, todo management, CLI dispatch, and WebUI management panels.
     - id: dsh-memory-evolve
-      name: 'dsh-memory-evolve'
+      name: '@deepseek-ai/dsh-memory-evolve'
 
     - id: message-feedback
       name: '@deepseek-ai/dsh-message-feedback'

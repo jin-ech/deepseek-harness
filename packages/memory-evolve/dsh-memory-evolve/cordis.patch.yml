@@ -7,4 +7,4 @@
 # profile patch (duplicate ids crash the loader).
 - insert:
     - id: dsh-memory-evolve
-      name: 'dsh-memory-evolve'
+      name: '@deepseek-ai/dsh-memory-evolve'
