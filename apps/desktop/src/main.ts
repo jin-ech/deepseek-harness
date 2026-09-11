@@ -1,6 +1,7 @@
 /** Electron shell: desktop project ownership, custom protocol, windows, and lifecycle. */
 
 import { readFile, writeFile } from 'node:fs/promises'
+import { existsSync } from 'node:fs'
 import { extname, join, normalize, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -9,6 +10,7 @@ import {
   dialog,
   ipcMain,
   Menu,
+  nativeImage,
   protocol,
   type IpcMainInvokeEvent,
 } from 'electron'
@@ -80,12 +82,15 @@ function developmentHostInspectPort(enabled: boolean): number | undefined {
 }
 
 function createWindow(preload: string): BrowserWindow {
+  const iconPath = join(app.getAppPath(), 'build', process.platform === 'win32' ? 'icon.ico' : 'icon.png')
+  const windowIcon = existsSync(iconPath) ? nativeImage.createFromPath(iconPath) : undefined
   const window = new BrowserWindow({
     width: 1280,
     height: 840,
     minWidth: 880,
     minHeight: 600,
     show: false,
+    ...(windowIcon !== undefined ? { icon: windowIcon } : {}),
     webPreferences: {
       preload,
       nodeIntegration: false,
@@ -147,6 +152,16 @@ async function main(): Promise<void> {
   const messages = locale.messages
   const appPreload = fileURLToPath(new URL('./preload-app.cjs', import.meta.url))
   const managementPreload = fileURLToPath(new URL('./preload.cjs', import.meta.url))
+
+  // Set the application icon for macOS Dock and Windows taskbar in development mode.
+  // In packaged mode electron-builder handles this via build/icon.icns or build/icon.ico.
+  if (process.platform === 'darwin' && app.dock !== undefined) {
+    const iconPath = join(app.getAppPath(), 'build', 'icon.png')
+    try {
+      const image = nativeImage.createFromPath(iconPath)
+      if (!image.isEmpty()) app.dock.setIcon(image)
+    } catch { /* icon file may not exist in all environments */ }
+  }
 
   const publishUpdate = (state: DesktopUpdateState): DesktopUpdateState => {
     updateState = state
