@@ -51,6 +51,7 @@ export function createElectronBuilderConfig(
     artifactName: 'deepseek-harness-${version}-${os}-${arch}.${ext}',
     directories: { output: buildPaths.artifacts },
     asar: true,
+    icon: 'build/icon.ico',
     files: [
       'lib/*.js',
       'lib/*.cjs',
@@ -63,6 +64,7 @@ export function createElectronBuilderConfig(
     ],
     mac: {
       category: 'public.app-category.developer-tools',
+      icon: 'build/icon.icns',
       identity: macOSSigning?.signingIdentity,
       forceCodeSigning: true,
       hardenedRuntime: true,
