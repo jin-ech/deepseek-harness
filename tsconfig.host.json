@@ -130,7 +130,11 @@
     "scripts/*.client.spec.ts",
     "scripts/client-bundle-css.spec.ts",
     "packages/typert/generator/tests/fixtures/**",
-    "scripts/client-bundle-purity.spec.ts"
+    "scripts/client-bundle-purity.spec.ts",
+    // Third-party plugins whose tests import client-side source directly
+    // (not through the .client.ts suffix convention). Their host-side plugin
+    // code is consumed through built lib/ declarations, not source inclusion.
+    "packages/genui/dsh-genui/tests/**"
   ],
   "references": [
     { "path": "./packages/client/ui-deliverables/tsconfig.host.json" },

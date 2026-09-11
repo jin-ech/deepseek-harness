@@ -50,6 +50,19 @@
     - id: code-runtime
       name: '@deepseek-ai/dsh-code-runtime-worker-thread'
 
+    # GenUI: interactive UI components rendered inline in assistant replies via
+    # the ```dsh-ui fence. Host half teaches the model the fence syntax and
+    # registers the render_ui / validate_dsh_ui tools; browser half renders
+    # the fence through GenuiBlock.
+    - id: genui
+      name: '@changfenhuang/dsh-genui'
+
+    # Memory Evolve: layered memory (global/user/project/git-branch/daily),
+    # self-evolution (experience distillation + skill auto-creation), skill
+    # management, todo management, CLI dispatch, and WebUI management panels.
+    - id: dsh-memory-evolve
+      name: 'dsh-memory-evolve'
+
     - id: message-feedback
       name: '@deepseek-ai/dsh-message-feedback'
       config:
